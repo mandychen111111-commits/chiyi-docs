@@ -360,7 +360,7 @@ function getPath(o,p){ return p.split(".").reduce((a,k)=>a==null?a:a[k], o); }
 function setPath(o,p,v){ const ks=p.split("."); let a=o; for(let i=0;i<ks.length-1;i++){ a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
 
 /* ---------- default data ---------- */
-function defaultCompany(){ return { name:"奇異生技股份有限公司", en:"CHIYI BIO CO., LTD.", taxId:"", owner:"", phone:"0800-313-000", email:"chiyibiotech@gmail.com", address:"", line:"", bankName:"", bankBranch:"", bankAcct:"", bankHolder:"奇異生技股份有限公司", color:"#1F5C63", logo:"", sealCo:"", sealP:"", sealCoImg:"", sealPImg:"", brand:"", bank2Name:"", bank2Branch:"", bank2Acct:"", bank2Holder:"", folders:{} }; }
+function defaultCompany(){ return { name:"奇異生技股份有限公司", en:"CHIYI BIO CO., LTD.", taxId:"", owner:"", phone:"07-2872098", email:"chiyibiotech@gmail.com", address:"", line:"", bankName:"", bankBranch:"", bankAcct:"", bankHolder:"奇異生技股份有限公司", color:"#1F5C63", logo:"", sealCo:"", sealP:"", sealCoImg:"", sealPImg:"", brand:"", bank2Name:"", bank2Branch:"", bank2Acct:"", bank2Holder:"", folders:{} }; }
 const KOL_CLAUSES = [
  {title:"合作內容",body:"乙方同意為甲方「{{product}}」進行網路推廣，於 {{start}} 至 {{end}} 期間，依附表一完成各項交付內容。"},
  {title:"審稿與上線",body:"乙方應於預定上線日 {{reviewDays}} 個工作天前，提交腳本或初稿供甲方審閱；甲方得提出修改意見，以兩次為原則。內容經甲方以書面（含 Line、Email）確認後方得發布，發布後至少保留一年，不得任意刪除或設為不公開。"},
@@ -643,7 +643,8 @@ function normalize(){
     {re:/奇異生技/, v:{owner:"林再發",address:"高雄市前金區七賢二路 122 號 11 樓之 2",taxId:"27304667",brand:"奇異生技",logo:LOGO_CHIYI,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19889",bankHolder:"奇異生技股份有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}},
     {re:/蓓薇媞/, v:{owner:"黃淑美",address:"高雄市前金區七賢二路 122 號 11 樓之 3",taxId:"90461860",phone:"07-2872198",color:"#5E9B3C",brand:"蓓薇媞",logo:LOGO_BWT,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19873",bankHolder:"蓓薇媞生技有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}}
   ];
-  S.companies.forEach(c=>{ if((c.presetV||0)>=2) return; const p=PRESET.find(x=>x.re.test(c.name)); if(p){ for(const [k,v] of Object.entries(p.v)){ if(!c[k] || (k==="bankHolder" && !c.presetV) || (k==="color" && c.color==="#2E2A2B")) c[k]=v; } } c.presetV=2; });
+  S.companies.forEach(c=>{ if((c.presetV||0)<3 && /奇異生技/.test(c.name) && c.phone==="0800-313-000") c.phone="07-2872098"; if((c.presetV||0)===2) c.presetV=3; });
+  S.companies.forEach(c=>{ if((c.presetV||0)>=2) return; const p=PRESET.find(x=>x.re.test(c.name)); if(p){ for(const [k,v] of Object.entries(p.v)){ if(!c[k] || (k==="bankHolder" && !c.presetV) || (k==="color" && c.color==="#2E2A2B")) c[k]=v; } } c.presetV=3; });
   if(!Array.isArray(S.products)) S.products=DEFAULT_PRODUCTS();
   if(S.docs && S.docs.quote && S.docs.quote.showDetail===undefined) S.docs.quote.showDetail=true;
   S.company=S.companies[S.coIdx];
@@ -684,8 +685,8 @@ async function drawSeal(text, kind){
 }
 async function refreshSeals(){
   const C=S.company;
-  SEAL.co = C.sealCoImg || await drawSeal(C.sealCo || C.name, "co");
-  SEAL.p = C.sealPImg || await drawSeal(C.sealP || personalText(C.owner), "p");
+  SEAL.co = C.sealCoImg || (C.sealCo ? await drawSeal(C.sealCo, "co") : "");
+  SEAL.p = C.sealPImg || (C.sealP ? await drawSeal(C.sealP, "p") : "");
   render();
 }
 
@@ -1264,8 +1265,8 @@ function openCompany(){
     <div class="fld"><label for="coColor">文件主色</label><input id="coColor" type="color" data-path="company.color" value="${esc(C.color)}"></div>
     <div class="fld"><label for="coLogo">公司 Logo（PNG／JPG）</label><input id="coLogo" type="file" accept="image/*" data-img="logo"></div></div>
    <div class="sec-h" style="border-top:1px dashed var(--line);padding-top:10px"><span>電子大小章</span></div>
-   <div class="seal-row"><img id="pvCo" alt="公司章預覽" src="${SEAL.co||""}"><div class="fld"><label for="sealCo">公司章文字（空白就用公司名稱）</label><input id="sealCo" data-path="company.sealCo" value="${esc(C.sealCo)}" placeholder="${esc(C.name)}"><input type="file" accept="image/png" data-img="sealCoImg" aria-label="上傳公司章 PNG"></div></div>
-   <div class="seal-row"><img id="pvP" alt="負責人章預覽" src="${SEAL.p||""}"><div class="fld"><label for="sealP">負責人章文字（空白就用負責人姓名＋印）</label><input id="sealP" data-path="company.sealP" value="${esc(C.sealP)}" placeholder="${esc(personalText(C.owner)||"例：王大明印")}"><input type="file" accept="image/png" data-img="sealPImg" aria-label="上傳負責人章 PNG"></div></div>
+   <div class="seal-row"><img id="pvCo" alt="公司章預覽" src="${SEAL.co||""}"><div class="fld"><label for="sealCo">公司章文字（填了才會自動產生印章，空白＝不蓋）</label><input id="sealCo" data-path="company.sealCo" value="${esc(C.sealCo)}" placeholder="例：${esc(C.name)}"><input type="file" accept="image/png" data-img="sealCoImg" aria-label="上傳公司章 PNG"></div></div>
+   <div class="seal-row"><img id="pvP" alt="負責人章預覽" src="${SEAL.p||""}"><div class="fld"><label for="sealP">負責人章文字（填了才會自動產生印章，空白＝不蓋）</label><input id="sealP" data-path="company.sealP" value="${esc(C.sealP)}" placeholder="例：${esc(personalText(C.owner)||"王大明印")}"><input type="file" accept="image/png" data-img="sealPImg" aria-label="上傳負責人章 PNG"></div></div>
    <div class="hint">上傳透明背景 PNG 會取代自動產生的印章。<button class="btn btn-sm btn-ghost" type="button" data-clearimg>移除上傳的圖片</button></div>
    <details><summary>雲端資料夾</summary><div class="hint" style="margin-top:8px">${rootOf(C)?`目前存到：<a href="https://drive.google.com/drive/folders/${esc(rootOf(C))}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(C.folders.rootName||(C.id==="chiyi"?"奇異生技_行政單據":C.name+"_行政單據"))}</a>。`:"這家公司還沒有雲端資料夾，第一次存檔時會自動建立。"}如果資料夾被刪除或想換一組，按下面的按鈕會在雲端硬碟根目錄建立新的一組。</div>
     <button class="btn btn-sm" type="button" id="btnFolders" style="margin-top:8px">重新建立雲端資料夾</button> <span class="hint" id="folderMsg"></span></details>
