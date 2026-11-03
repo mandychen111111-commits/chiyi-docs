@@ -586,14 +586,14 @@ function openPriceList(){
   $("#plList").addEventListener("input",e=>{ const k=e.target.dataset.plq; if(k!==undefined && PLSEL[k]!==undefined){ PLSEL[k]=Math.max(1,num(e.target.value)||1); plSummary(); } });
   $("#plAdd").addEventListener("click",()=>{
     const type=S.cur, d=S.docs[type]; const disc=num($("#plDisc").value); const f=disc>0&&disc<10?disc/10:1;
-    const add=Object.keys(PLSEL).map(k=>{ const x=PL[k]; const price=Math.round(x.p*f);
-      const spec=`${x.u}｜${x.c}${f<1?`｜建議售價 ${money(x.p)}`:""}`;
+    const add=Object.keys(PLSEL).map(k=>{ const x=PL[k]; const price=x.p;
+      const spec=`${x.u}｜${x.c}`;
       return type==="ship" ? {name:x.n,spec:`${x.u}｜${x.c}`,lot:"",exp:"",qty:num(PLSEL[k]),unit:plUnit(x.u),price,img:`L:${x.i}`}
-                           : {name:x.n,spec,unit:plUnit(x.u),qty:num(PLSEL[k]),price,img:`L:${x.i}`}; });
+                           : {name:x.n,spec,unit:plUnit(x.u),qty:num(PLSEL[k]),price,disc:f<1?Math.round(f*100):"",img:`L:${x.i}`}; });
     const empty=d.items.length===1 && !d.items[0].name;
     d.items = ($("#plReplace").checked||empty) ? add : d.items.concat(add);
     d.sample=false; persist(); $("#modal").hidden=true; $("#modal").innerHTML=""; renderForm(); render();
-    setStatus("ok",`已加入 ${add.length} 項產品${f<1?`，單價已套用 ${disc} 折`:""}。`);
+    setStatus("ok",`已加入 ${add.length} 項產品${f<1?`，每項折數已設為 ${Math.round(f*100)}%`:""}。`);
   });
 }
 
@@ -695,8 +695,8 @@ const F = (k,l,t,o) => Object.assign({k,l,t:t||"text"}, o||{});
 const SCHEMA = {
  quote:[
   {h:"單據資訊",f:[F("no","報價單號"),F("date","報價日期","date"),F("valid","有效期限","date")]},
-  {h:"客戶資料",f:[F("client","客戶名稱","text",{full:1}),F("taxId","統一編號"),F("contact","聯絡人"),F("phone","電話"),F("email","Email"),F("address","地址","text",{full:1})]},
-  {h:"品項明細",list:"items",add:"新增品項",cols:[F("img","產品圖","img"),F("name","品名","text",{full:1}),F("spec","規格"),F("unit","單位"),F("qty","數量","num"),F("price","單價（未稅）","num")],blank:{img:"",name:"",spec:"",unit:"瓶",qty:1,price:0}},
+  {h:"客戶資料",f:[F("client","客戶名稱","text",{full:1}),F("taxId","統一編號"),F("contact","職稱／聯絡人"),F("phone","電話"),F("email","Email"),F("address","地址","text",{full:1})]},
+  {h:"品項明細",list:"items",add:"新增品項",cols:[F("img","產品圖","img"),F("name","品名","text",{full:1}),F("spec","規格"),F("unit","單位"),F("qty","數量","num"),F("price","單價（未稅）","num"),F("disc","折數 %（例：85，空白＝不打折）","num")],blank:{img:"",name:"",spec:"",unit:"瓶",qty:1,price:0,disc:""}},
   {h:"金額與條件",f:[F("taxMode","稅別","sel",{o:["外加 5% 營業稅","內含 5% 營業稅","免稅"]}),F("discount","折讓金額","num"),F("payTerms","付款條件","text",{full:1}),F("delivery","交貨方式","text",{full:1}),F("note","備註","area",{full:1}),F("showSeal","蓋上公司大小章","chk"),F("showDetail","附上產品規格明細（從產品庫選的品項）","chk")]}
  ],
  ship:[
@@ -707,7 +707,7 @@ const SCHEMA = {
  ],
  stmt:[
   {h:"單據資訊",f:[F("no","對帳單號"),F("period","對帳月份","month"),F("date","製表日期","date"),F("due","付款期限","date")]},
-  {h:"客戶資料",f:[F("client","客戶名稱","text",{full:1}),F("taxId","統一編號"),F("contact","聯絡人"),F("phone","電話"),F("address","地址","text",{full:1})]},
+  {h:"客戶資料",f:[F("client","客戶名稱","text",{full:1}),F("taxId","統一編號"),F("contact","職稱／聯絡人"),F("phone","電話"),F("address","地址","text",{full:1})]},
   {h:"上期餘額",f:[F("prev","上期未收餘額（NT$）","num")]},
   {h:"本期明細",list:"rows",add:"新增一筆",cols:[F("date","日期","date"),F("ref","單號"),F("desc","摘要","text",{full:1}),F("amount","銷貨金額（含稅）","num"),F("paid","已收金額","num")],blank:{date:"",ref:"",desc:"",amount:0,paid:0}},
   {h:"其他",f:[F("note","備註","area",{full:1})]}
@@ -805,8 +805,11 @@ function renderHistory(){
 }
 
 /* ---------- calculations ---------- */
+const discPct = it => { const v=num(it.disc); return v>0 && v<100 ? v : 100; };
+const lineAmt = it => Math.round(num(it.qty)*num(it.price)*discPct(it)/100);
+const discTxt = it => discPct(it)<100 ? discPct(it)+"%" : "—";
 function quoteCalc(d){
-  const gross = d.items.reduce((a,i)=>a+num(i.qty)*num(i.price),0);
+  const gross = d.items.reduce((a,i)=>a+lineAmt(i),0);
   const sub = Math.max(0, gross - num(d.discount));
   if(d.taxMode.startsWith("外加")){ const tax=Math.round(sub*0.05); return {gross,sub,tax,total:sub+tax,pre:sub}; }
   if(d.taxMode.startsWith("內含")){ const tax=Math.round(sub-sub/1.05); return {gross,sub,tax,total:sub,pre:sub-tax}; }
@@ -839,15 +842,15 @@ function sealsHTML(){ return `<div class="seals">${SEAL.co?`<img class="co" src=
 function partyBox(cap, rows){ return `<div class="box"><div class="cap">${cap}</div><div class="kv">${rows.filter(r=>r).map(([k,v,w])=>`<div class="${w?"w":""}"><span>${k}</span>${ph(v)}</div>`).join("")}</div></div>`; }
 
 function renderQuote(d){
-  const c=quoteCalc(d);
-  const rows=d.items.map((it,i)=>`<tr><td class="c">${i+1}</td><td><div class="pn">${it.img?`<span class="pimg">${fitImg(photoSrc(it.img),44,44)}</span>`:""}<div>${ph(it.name)}${it.spec?`<span class="sub">${esc(it.spec)}</span>`:""}</div></div></td><td class="c">${esc(it.unit)}</td><td class="r">${money(it.qty)}</td><td class="r">${money(it.price)}</td><td class="r">${money(num(it.qty)*num(it.price))}</td></tr>`).join("");
+  const c=quoteCalc(d), hasDisc=d.items.some(it=>discPct(it)<100);
+  const rows=d.items.map((it,i)=>`<tr><td class="c">${i+1}</td><td><div class="pn">${it.img?`<span class="pimg">${fitImg(photoSrc(it.img),44,44)}</span>`:""}<div>${ph(it.name)}${it.spec?`<span class="sub">${esc(it.spec)}</span>`:""}</div></div></td><td class="c">${esc(it.unit)}</td><td class="r">${money(it.qty)}</td><td class="r">${money(it.price)}</td>${hasDisc?`<td class="r">${discTxt(it)}</td>`:""}<td class="r">${money(lineAmt(it))}</td></tr>`).join("");
   const inc=d.taxMode.startsWith("內含");
   const sumRows = [`<div><span>品項小計</span>${money(c.gross)}</div>`, num(d.discount)?`<div><span>折讓</span>− ${money(d.discount)}</div>`:"",
     inc?`<div><span>未稅金額</span>${money(c.pre)}</div><div><span>營業稅（內含 5%）</span>${money(c.tax)}</div>`
        : d.taxMode.startsWith("外加")?`<div><span>未稅合計</span>${money(c.sub)}</div><div><span>營業稅 5%</span>${money(c.tax)}</div>`:`<div><span>稅別</span>免稅</div>`].join("");
   return `<div class="doc">${header("quote",`報價單號：<b>${esc(d.no)}</b><br>報價日期：${fmtDate(d.date)}<br>有效期限：${fmtDate(d.valid)}`)}
-  ${partyBox("客戶資料",[["客戶名稱",d.client,1],["統一編號",d.taxId],["聯絡人",d.contact],["電話",d.phone],["Email",d.email],["地址",d.address,1]])}
-  <table class="t"><thead><tr><th class="c" style="width:34px">#</th><th>品名／規格</th><th class="c" style="width:52px">單位</th><th class="r" style="width:64px">數量</th><th class="r" style="width:90px">單價</th><th class="r" style="width:100px">金額</th></tr></thead><tbody>${rows}</tbody></table>
+  ${partyBox("客戶資料",[["客戶名稱",d.client,1],["統一編號",d.taxId],["職稱／聯絡人",d.contact],["電話",d.phone],["Email",d.email],["地址",d.address,1]])}
+  <table class="t"><thead><tr><th class="c" style="width:34px">#</th><th>品名／規格</th><th class="c" style="width:52px">單位</th><th class="r" style="width:64px">數量</th><th class="r" style="width:84px">單價</th>${hasDisc?`<th class="r" style="width:58px">折數</th>`:""}<th class="r" style="width:96px">金額</th></tr></thead><tbody>${rows}</tbody></table>
   <div class="split"><div class="notes">${d.payTerms?`<div class="cap">付款條件</div>${nl(d.payTerms)}`:""}${d.delivery?`<div class="cap">交貨方式</div>${nl(d.delivery)}`:""}${bankHTML()}${d.note?`<div class="cap">備註</div>${nl(d.note)}`:""}</div>
    <div class="sum">${sumRows}<div class="tot"><span>總計（NT$）</span><b>${money(c.total)}</b></div><span class="cn">新臺幣 ${cnAmount(c.total)}</span></div></div>
   <div class="signs"><div class="sign"><div class="cap">報價單位</div>${esc(S.company.name)}${d.showSeal?sealsHTML():""}</div>
@@ -871,7 +874,7 @@ function renderStmt(d){
   const sales=d.rows.reduce((a,r)=>a+num(r.amount),0), paid=d.rows.reduce((a,r)=>a+num(r.paid),0), bal=num(d.prev)+sales-paid;
   const rows=d.rows.map(r=>`<tr><td class="mono">${fmtDate(r.date)}</td><td class="mono">${esc(r.ref)}</td><td>${esc(r.desc)}</td><td class="r">${num(r.amount)?money(r.amount):""}</td><td class="r">${num(r.paid)?money(r.paid):""}</td></tr>`).join("");
   return `<div class="doc">${header("stmt",`對帳單號：<b>${esc(d.no)}</b><br>對帳月份：${fmtMonth(d.period)}<br>製表日期：${fmtDate(d.date)}`)}
-  ${partyBox("客戶資料",[["客戶名稱",d.client,1],["統一編號",d.taxId],["聯絡人",d.contact],["電話",d.phone],["地址",d.address,1]])}
+  ${partyBox("客戶資料",[["客戶名稱",d.client,1],["統一編號",d.taxId],["職稱／聯絡人",d.contact],["電話",d.phone],["地址",d.address,1]])}
   <div class="strip"><div><span>上期未收</span><b>${money(d.prev)}</b></div><div><span>本期銷貨</span><b>${money(sales)}</b></div><div><span>本期已收</span><b>${money(paid)}</b></div><div><span>本期應收（NT$）</span><b>${money(bal)}</b></div></div>
   <table class="t"><thead><tr><th style="width:90px">日期</th><th style="width:120px">單號</th><th>摘要</th><th class="r" style="width:100px">銷貨金額</th><th class="r" style="width:100px">已收金額</th></tr></thead><tbody>${rows}</tbody>
   <tfoot><tr><td colspan="3">本期合計</td><td class="r">${money(sales)}</td><td class="r">${money(paid)}</td></tr></tfoot></table>
@@ -1098,15 +1101,15 @@ function gdocHTML(type){
   const mid=hasImg?"vertical-align:middle;":""; const rowB=cellB+mid;
   let body="";
   if(type==="quote"){
-    const c=quoteCalc(d), inc=d.taxMode.startsWith("內含"), ext=d.taxMode.startsWith("外加");
-    const items=d.items.map((it,i)=>`<tr>${td(i+1,rowB+"text-align:center")}${imgTd(it)}${td(`${v(it.name)}${it.spec?`<br><span style="font-size:8.5pt;color:#666666">${esc(it.spec)}</span>`:""}`,rowB)}${td(esc(it.unit),rowB+"text-align:center")}${td(money(it.qty),rowB+"text-align:right")}${td(money(it.price),rowB+"text-align:right")}${td(money(num(it.qty)*num(it.price)),rowB+"text-align:right")}</tr>`).join("");
+    const c=quoteCalc(d), inc=d.taxMode.startsWith("內含"), ext=d.taxMode.startsWith("外加"), qDisc=d.items.some(it=>discPct(it)<100);
+    const items=d.items.map((it,i)=>`<tr>${td(i+1,rowB+"text-align:center")}${imgTd(it)}${td(`${v(it.name)}${it.spec?`<br><span style="font-size:8.5pt;color:#666666">${esc(it.spec)}</span>`:""}`,rowB)}${td(esc(it.unit),rowB+"text-align:center")}${td(money(it.qty),rowB+"text-align:right")}${td(money(it.price),rowB+"text-align:right")}${qDisc?td(discTxt(it),rowB+"text-align:right"):""}${td(money(lineAmt(it)),rowB+"text-align:right")}</tr>`).join("");
     const sum=[["品項小計",money(c.gross)],num(d.discount)?["折讓","− "+money(d.discount)]:null,...(inc?[["未稅金額",money(c.pre)],["營業稅（內含 5%）",money(c.tax)]]:ext?[["未稅合計",money(c.sub)],["營業稅 5%",money(c.tax)]]:[["稅別","免稅"]])].filter(Boolean)
       .map(([a,b])=>`<tr>${td(`<span style="color:#555555">${a}</span>`)}${td(b,"text-align:right")}</tr>`).join("")
       +`<tr>${td("<b>總計（NT$）</b>","border-top:1.5pt solid #1E1E1E;font-size:12pt")}${td(`<b style="color:${B}">${money(c.total)}</b>`,"border-top:1.5pt solid #1E1E1E;text-align:right;font-size:13pt")}</tr><tr><td colspan="2" style="${FONT}border:1pt solid #FFFFFF;padding:2pt 6pt;text-align:right;font-size:8.5pt;color:#555555">新臺幣 ${cnAmount(c.total)}</td></tr>`;
     const notes=(d.payTerms?P(`<b>付款條件</b><br>${nl(d.payTerms)}`):"")+(d.delivery?P(`<b>交貨方式</b><br>${nl(d.delivery)}`):"")+bank()+(d.note?P(`<b>備註</b><br>${nl(d.note)}`):"");
     body=head(`報價單號：<b>${esc(d.no)}</b><br>報價日期：${fmtDate(d.date)}<br>有效期限：${fmtDate(d.valid)}`)+gap
-      +party("客戶資料",[["客戶名稱",d.client],["統一編號",d.taxId],["聯絡人",d.contact],["電話",d.phone],["Email",d.email],["地址",d.address]])+gap
-      +T(`<tr>${th("#","text-align:center;width:6%")}${imgTh()}${th("品名／規格")}${th("單位","text-align:center;width:9%")}${th("數量","text-align:right;width:10%")}${th("單價","text-align:right;width:13%")}${th("金額","text-align:right;width:15%")}</tr>${items}`)+gap
+      +party("客戶資料",[["客戶名稱",d.client],["統一編號",d.taxId],["職稱／聯絡人",d.contact],["電話",d.phone],["Email",d.email],["地址",d.address]])+gap
+      +T(`<tr>${th("#","text-align:center;width:6%")}${imgTh()}${th("品名／規格")}${th("單位","text-align:center;width:9%")}${th("數量","text-align:right;width:10%")}${th("單價","text-align:right;width:12%")}${qDisc?th("折數","text-align:right;width:8%"):""}${th("金額","text-align:right;width:14%")}</tr>${items}`)+gap
       +T(`<tr>${td(notes,"width:55%")}${td(T(sum),"width:45%")}</tr>`)+gap
       +signs("報價單位",`${esc(C.name)}<br>${d.showSeal?sealImgs():""}`,"客戶確認回簽",signLine("確認上述報價內容無誤，請簽章後回傳。","簽章"))
       +gap+gap+prodDetailHTML(d,true);
@@ -1126,7 +1129,7 @@ function gdocHTML(type){
     const strip=[["上期未收",money(d.prev)],["本期銷貨",money(sales)],["本期已收",money(paid)],["本期應收（NT$）",money(bal)]].map(([a,b],i)=>td(`<span style="font-size:8.5pt;color:#555555">${a}</span><br><b style="font-size:${i===3?13:11}pt;${i===3?`color:${B}`:""}">${b}</b>`,`border:1pt solid #CBD2D0;width:25%;${i===3?"background-color:#F3F6F5":""}`)).join("");
     const rows=d.rows.map(r=>`<tr>${td(fmtDate(r.date),cellB)}${td(esc(r.ref),cellB)}${td(esc(r.desc),cellB)}${td(num(r.amount)?money(r.amount):"",cellB+"text-align:right")}${td(num(r.paid)?money(r.paid):"",cellB+"text-align:right")}</tr>`).join("");
     body=head(`對帳單號：<b>${esc(d.no)}</b><br>對帳月份：${fmtMonth(d.period)}<br>製表日期：${fmtDate(d.date)}`)+gap
-      +party("客戶資料",[["客戶名稱",d.client],["統一編號",d.taxId],["聯絡人",d.contact],["電話",d.phone],["地址",d.address],null])+gap
+      +party("客戶資料",[["客戶名稱",d.client],["統一編號",d.taxId],["職稱／聯絡人",d.contact],["電話",d.phone],["地址",d.address],null])+gap
       +T(`<tr>${strip}</tr>`)+gap
       +T(`<tr>${th("日期")}${th("單號")}${th("摘要")}${th("銷貨金額","text-align:right")}${th("已收金額","text-align:right")}</tr>${rows}<tr>${td("<b>本期合計</b>")}${td("")}${td("")}${td(`<b>${money(sales)}</b>`,"text-align:right")}${td(`<b>${money(paid)}</b>`,"text-align:right")}</tr>`)+gap
       +P(`<b>付款期限</b>　${fmtDate(d.due)||"—"}（新臺幣 ${cnAmount(bal)}）`)+bank()+(d.note?P(`<b>備註</b><br>${nl(d.note)}`):"")
