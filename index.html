@@ -541,6 +541,15 @@ function renderEquip(d, kind, gd){
       return `<tr class="blk">${td(`${esc(ph.label)}${pr.spec?`<br><span style="color:#555555;font-size:${sfs}">(${esc(pr.spec)})</span>`:""}`,"width:22%;vertical-align:top")}${td(imgTag(ph.img,gd?170:220),"width:40%;text-align:center")}${td(`<span style="font-size:${sfs};line-height:1.6">${txt}</span>`,"width:38%;vertical-align:top")}</tr>`;
     }).join("")}</table>`;
   }
+  if(d.back!==false && !gd){
+    const info=[C.address?`地址：${esc(C.address)}`:"",C.phone?`電話：${esc(C.phone)}`:"",C.email?`Email：${esc(C.email)}`:""].filter(Boolean).join("<br>");
+    h+=`${pageBreak}<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed"><tr>
+      <td style="width:9%;background-color:${brand};border:1px solid ${brand};height:940px"></td>
+      <td style="width:4%;border:1px solid #FFFFFF"></td>
+      <td style="border:1px solid #FFFFFF;text-align:center;vertical-align:middle">${C.logo?fitImg(C.logo,180,46)+"<br><br>":""}<span style="font-size:18px;letter-spacing:4px;color:${brand};font-weight:700">${esc(C.name)}</span>${info?`<br><br><span style="font-size:13px;line-height:1.9;color:#555555">${info}</span>`:""}</td>
+      <td style="width:4%;border:1px solid #FFFFFF"></td>
+      <td style="width:9%;background-color:${brand};border:1px solid ${brand}"></td></tr></table>`;
+  }
   return `<div>${h}</div>`;
 }
 
@@ -672,8 +681,8 @@ function blankDoc(type){
     case "ship": return {no:nextNo(P),date:t,orderNo:"",carrier:"黑貓宅急便",trackNo:"",client:"",contact:"",phone:"",address:"",items:[{name:"",spec:"",lot:"",exp:"",qty:1,unit:"瓶",price:0}],showPrice:false,note:"",sample:false};
     case "stmt": return {no:nextNo(P),period:thisMonth(),date:t,due:addDays(t,30),client:"",taxId:"",contact:"",phone:"",address:"",prev:0,rows:[{date:t,ref:"",desc:"",amount:0,paid:0}],note:"",sample:false};
     case "kol": return {no:nextNo(P),date:t,product:"",start:t,end:addDays(t,60),name:"",handle:"",platforms:"",followers:"",idNo:"",phone:"",email:"",address:"",items:[{platform:"Instagram",format:"Reels 短影音",qty:1,date:""}],fee:0,feeType:"個人（執行業務所得 9A）",union:false,commission:"",gifts:"",payDays:30,bankName:"",bankAcct:"",bankHolder:"",reviewDays:3,authMonths:6,exclusDays:30,court:"臺灣臺北地方法院",clauses:JSON.parse(JSON.stringify(KOL_CLAUSES)),sample:false};
-    case "sale": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS.sale)),price:"",taxMode:"未稅",warranty:"壹",court:"臺灣高雄地方法院",cover:true,photos:[{label:"NCPI(小P) 奈米冷壓噴射系統第二代",img:"P:ncpi2"}],clauses:JSON.parse(JSON.stringify(SALE_CLAUSES)),sample:false};
-    case "install": case "lease": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS[type])),start:t,end:addDays(t,364),minYears:"1",monthly:"",deposit:"",earlyFee:"",termType:"長期分期",court:"高雄地方法院",cover:true,photos:EQ_PHOTOS(),clauses:JSON.parse(JSON.stringify(type==="lease"?LEASE_CLAUSES:INSTALL_CLAUSES)),sample:false};
+    case "sale": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS.sale)),price:"",taxMode:"未稅",warranty:"壹",court:"臺灣高雄地方法院",cover:true,back:true,photos:[{label:"NCPI(小P) 奈米冷壓噴射系統第二代",img:"P:ncpi2"}],clauses:JSON.parse(JSON.stringify(SALE_CLAUSES)),sample:false};
+    case "install": case "lease": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS[type])),start:t,end:addDays(t,364),minYears:"1",monthly:"",deposit:"",earlyFee:"",termType:"長期分期",court:"高雄地方法院",cover:true,back:true,photos:EQ_PHOTOS(),clauses:JSON.parse(JSON.stringify(type==="lease"?LEASE_CLAUSES:INSTALL_CLAUSES)),sample:false};
     case "store": return {no:nextNo(P),client:"",contact:"",taxId:"",phone:"",email:"",address:"",plan:"",taxMode:"未稅",purchase:"",payMethod:"匯款",start:t,end:addDays(t,364),amountWan:"",discount:"",idNo:"",birthday:"",sales:"",court:"高雄地方法院",note:"",clauses:JSON.parse(JSON.stringify(STORE_CLAUSES)),sample:false};
     case "dealer": return {no:nextNo(P),date:t,level:"區域經銷商",region:"",products:"",start:t,end:addDays(t,364),client:"",taxId:"",owner:"",phone:"",email:"",address:"",disc:"建議售價 6 折",minOrder:0,target:0,deposit:0,payTerms:"月結 30 天",leadDays:3,court:"臺灣臺北地方法院",clauses:JSON.parse(JSON.stringify(DEALER_CLAUSES)),sample:false};
   }
@@ -713,6 +722,7 @@ function normalize(){
     {re:/奇異生技/, v:{owner:"林再發",address:"高雄市前金區七賢二路 122 號 11 樓之 2",taxId:"27304667",brand:"奇異生技",logo:LOGO_CHIYI,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19889",bankHolder:"奇異生技股份有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}},
     {re:/蓓薇媞/, v:{owner:"黃淑美",address:"高雄市前金區七賢二路 122 號 11 樓之 3",taxId:"90461860",phone:"07-2872198",color:"#5E9B3C",brand:"蓓薇媞",logo:LOGO_BWT,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19873",bankHolder:"蓓薇媞生技有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}}
   ];
+  ["install","sale","lease"].forEach(k=>{ if(S.docs && S.docs[k] && S.docs[k].back===undefined) S.docs[k].back=true; });
   if(S.docs && S.docs.sale && S.docs.sale.clauses){ const cl=S.docs.sale.clauses;
     if(cl[1] && /^一、標的物價金及支付方式/.test(cl[1].body||"")) cl[1].body=SALE_CLAUSES[1].body;
     if(cl[4] && /提供備用機服務。$/.test(cl[4].body||"")) cl[4].body=SALE_CLAUSES[4].body; }
@@ -800,7 +810,7 @@ const SCHEMA = {
   {h:"合約條款",clauses:DEALER_CLAUSES}
  ],
  install:[
-  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("start","分期起日","date"),F("end","分期迄日","date"),F("minYears","最短分期（年）"),F("cover","加上封面頁","chk")]},
+  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("start","分期起日","date"),F("end","分期迄日","date"),F("minYears","最短分期（年）"),F("cover","加上封面頁","chk"),F("back","加上封底頁","chk")]},
   {h:"乙方資料",f:[F("client","公司名稱","text",{full:1}),F("contact","聯絡人"),F("phone","電話"),F("taxId","統一編號"),F("address","地址","text",{full:1})]},
   {h:"分期設備",list:"items",add:"新增設備",cols:[F("name","設備名稱","text",{full:1}),F("model","型號"),F("acc","附屬品/配件"),F("qty","數量","num")],blank:{name:"",model:"",acc:"請見附件",qty:1}},
   {h:"費用",f:[F("monthly","每月分期費（元）","num"),F("deposit","保證金（元）","num"),F("termType","提前解約方式","sel",{o:["長期分期","短期分期"]}),F("earlyFee","長期解約賠償金（元）","num"),F("court","管轄法院")]},
@@ -808,7 +818,7 @@ const SCHEMA = {
   {h:"合約條款",clauses:INSTALL_CLAUSES}
  ],
  sale:[
-  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("cover","加上封面頁","chk")]},
+  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("cover","加上封面頁","chk"),F("back","加上封底頁","chk")]},
   {h:"乙方資料",f:[F("client","公司名稱","text",{full:1}),F("contact","代表人"),F("phone","電話"),F("taxId","統一編號"),F("address","地址","text",{full:1})]},
   {h:"標的物（買賣設備）",list:"items",add:"新增設備",cols:[F("name","設備名稱","text",{full:1}),F("model","型號"),F("qty","數量","num")],blank:{name:"",model:"",acc:"請見附件",qty:1}},
   {h:"價格與保固",f:[F("price","標的物價金（元）","num"),F("taxMode","價金","sel",{o:["未稅","含稅"]}),F("warranty","保固年數（例：壹）"),F("court","管轄法院")]},
@@ -816,7 +826,7 @@ const SCHEMA = {
   {h:"合約條款",clauses:SALE_CLAUSES}
  ],
  lease:[
-  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("start","租賃起日","date"),F("end","租賃迄日","date"),F("minYears","最短租賃期（年）"),F("cover","加上封面頁","chk")]},
+  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("start","租賃起日","date"),F("end","租賃迄日","date"),F("minYears","最短租賃期（年）"),F("cover","加上封面頁","chk"),F("back","加上封底頁","chk")]},
   {h:"承租人（乙方）資料",f:[F("client","公司名稱","text",{full:1}),F("contact","聯絡人"),F("phone","電話"),F("taxId","統一編號"),F("address","地址","text",{full:1})]},
   {h:"租賃設備",list:"items",add:"新增設備",cols:[F("name","設備名稱","text",{full:1}),F("model","型號"),F("acc","附屬品/配件"),F("qty","數量","num")],blank:{name:"",model:"",acc:"請見附件",qty:1}},
   {h:"費用",f:[F("monthly","每月租賃費（元）","num"),F("deposit","保證金（元）","num"),F("court","管轄法院")]},
@@ -1138,12 +1148,14 @@ async function buildPDF(opt){
   const pr=clone.getBoundingClientRect();
   const breaks=[...clone.querySelectorAll(".doc > *, .doc tr, .doc .clause, .sig-grid > *, .blk")].map(el=>el.getBoundingClientRect().top-pr.top);
   const forced=[...clone.querySelectorAll(".pb")].map(el=>el.getBoundingClientRect().top-pr.top);
+  const lastBot=Math.max(0,...[...clone.querySelectorAll(".doc > *, .blk")].map(el=>el.getBoundingClientRect().bottom-pr.top));
   const canvas=await html2canvas(clone,{scale:SC,backgroundColor:"#ffffff",useCORS:true,logging:false,windowWidth:1200});
   const k=canvas.width/clone.offsetWidth, fpx=forced.map(b=>Math.round(b*k)).sort((a,b)=>a-b), bpx=[...new Set(breaks.map(b=>Math.round(b*k)))].sort((a,b)=>a-b);
   const pxmm=canvas.width/210, pageH=297*pxmm, topM=16*pxmm, botM=14*pxmm;
   const { jsPDF } = window.jspdf; const pdf=new jsPDF({unit:"mm",format:"a4",compress:true});
   let y=0, first=true;
-  while(y < canvas.height-4){
+  const stopAt=lastBot?Math.min(canvas.height,Math.round(lastBot*k)+20):canvas.height;
+  while(y < stopAt-4){
     const avail = first ? pageH-botM : pageH-topM-botM;
     let end=y+avail;
     const fb=fpx.find(b=>b>y+8 && b<=Math.min(end,canvas.height));
