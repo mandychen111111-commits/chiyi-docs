@@ -541,6 +541,19 @@ function openProducts(){
 function applyProduct(type,i,id){
   const it=S.docs[type].items[i], p=prodById(id); if(!it) return;
   if(!p){ it.pid=""; return; }
+  if(type==="install"||type==="lease"){
+    const d=S.docs[type];
+    Object.assign(it,{pid:id,name:p.name,model:p.model||({asl300:"ASL 300",api202:"API 202",pro1:"PRO-1 SRP",ncpi2:"NCPI(小P)"}[id])||String(p.name).split(" ")[0],acc:"請見附件",qty:it.qty||1});
+    d.photos=d.photos||[];
+    if(!d.items.some(x=>/NCPI/i.test(x.name||""))) d.photos=d.photos.filter(ph=>!/^@/.test(ph.img||""));
+    if(p.img && !d.photos.some(ph=>ph.img===p.img)){
+      const blank=d.photos.findIndex(ph=>!ph.img);
+      const row={label:p.name,img:p.img};
+      if(blank>=0) d.photos[blank]=row; else d.photos.push(row);
+      if(p.img2 && !d.photos.some(ph=>ph.img===p.img2)) d.photos.push({label:p.name+"（配件）",img:p.img2});
+    }
+    return;
+  }
   Object.assign(it,{pid:id,name:p.name,spec:p.spec||"",unit:p.unit||it.unit,img:p.img||""});
   if(type==="quote" && num(p.price)) it.price=num(p.price);
   if(type==="ship" && num(p.price)) it.price=num(p.price);
@@ -777,7 +790,7 @@ function renderForm(){
       h += `<div class="sec"><div class="sec-h"><span>${sec.h}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${plBtn}<button class="btn btn-sm" type="button" data-act="add" data-list="${sec.list}">＋ ${sec.add}</button></span></div>`;
       if(sec.list==="items" && type==="quote") h += `<div class="alldisc"><label for="allDisc">全部品項折數</label><input id="allDisc" type="number" min="1" max="100" inputmode="decimal" placeholder="例：85"><span>%</span><button class="btn btn-sm" type="button" data-act="alldisc">套用到全部</button><button class="btn btn-sm btn-ghost" type="button" data-act="nodisc">全部取消折扣</button></div>`;
       d[sec.list].forEach((it,i)=>{
-        const picker = (sec.list==="items" && (type==="quote"||type==="ship")) ? `<div class="fld full"><label for="pick${i}">從產品庫選</label><select id="pick${i}" data-pick="${i}"><option value="">－ 自行輸入 －</option>${S.products.map(p=>`<option value="${esc(p.id)}" ${it.pid===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div>` : "";
+        const picker = (sec.list==="items" && (type==="quote"||type==="ship"||type==="install")) ? `<div class="fld full"><label for="pick${i}">從產品庫選</label><select id="pick${i}" data-pick="${i}"><option value="">－ 自行輸入 －</option>${S.products.map(p=>`<option value="${esc(p.id)}" ${it.pid===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div>` : "";
         h += `<div class="item"><div class="item-h"><span>#${i+1}</span><button class="x" type="button" title="刪除" aria-label="刪除第 ${i+1} 項" data-act="del" data-list="${sec.list}" data-i="${i}">×</button></div><div class="grid2">${picker}${sec.cols.map(c=>fieldHTML(c, `${sec.list}.${i}.${c.k}`, it[c.k])).join("")}</div></div>`;
       });
       h += `</div>`;
