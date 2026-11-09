@@ -329,7 +329,8 @@ const DOCS = {
   kol:{label:"KOL 合作合約",en:"",prefix:"KOL",folder:"14KpVR7Uxs85v6XYurHNjMfYqFoAnuQ1c",grp:"合約"},
   dealer:{label:"經銷合約",en:"",prefix:"DL",folder:"1SvDqqOYquI7j3eJ8OoCkyW_wENVaW3d0",grp:"合約"},
   store:{label:"特約店協議書",en:"",prefix:"SP",folder:"1b0g3OutEzr3uOIsr8rQVLsV8pTpzFAGS",grp:"合約"},
-  install:{label:"設備分期合約",en:"",prefix:"EI",folder:"",grp:"合約"}
+  install:{label:"設備分期合約",en:"",prefix:"EI",folder:"",grp:"合約"},
+  sale:{label:"設備買賣合約",en:"",prefix:"ES",folder:"",grp:"合約"}
 };
 const KEY = "chiyi-docs-v1";
 
@@ -402,13 +403,24 @@ const STORE_CLAUSES = [
 ].map(body=>({title:"",body}));
 const EQ_ITEMS = {
   install:[{name:"NCPI 奈米冷壓脈衝噴射經皮系統",model:"NCPI",acc:"請見附件",qty:1}],
-  lease:[{name:"NCPI 奈米冷壓脈衝噴射經皮系統(小 P)",model:"NCPI",acc:"請見附件",qty:1}]
+  lease:[{name:"NCPI 奈米冷壓脈衝噴射經皮系統(小 P)",model:"NCPI",acc:"請見附件",qty:1}],
+  sale:[{name:"NCPI 奈米冷壓噴射系統 (小 P)",model:"NCPI(小P)",acc:"請見附件",qty:1,pid:"ncpi2"}]
 };
 const EQ_PHOTOS = () => [{label:"主機",img:"@0"},{label:"水雕導入儀",img:"@1"},{label:"注氧儀配件組",img:"@2"}];
 const photoSrc = s => /^L:\d+$/.test(s||"") ? (PL_IMG[Number(s.slice(2))]||"") : /^@\d$/.test(s||"") ? EQ_PHOTO_DATA[Number(s.slice(1))] : /^P:/.test(s||"") ? (PROD_IMG[s.slice(2)]||"") : (s||"");
 const RETURN_CLAUSE = w => ({title:`${w}設備退回`,body:`1. 退回時間\n   ${w}期滿後，乙方應在期滿當日或甲乙雙方協議的時間內，將${w}設備退還至甲方指定地點，並保持設備完好。\n2. 退回驗收\n   甲方在接收退回設備時，將對設備進行檢查驗收。若設備存在毀損、缺失或其他異常情況，甲方將向乙方提出並保留扣除保證金作為賠償的權利。\n3. 清潔及保養要求\n   乙方退還設備時，應確保設備已完成基本清潔，並保持良好保養狀態。若設備未達到合理的清潔及保養標準，甲方有權要求乙方支付相應的清潔費用。\n4. 損壞賠償\n   若${w}設備在退回時因乙方使用不當或未善盡保管責任而造成損壞，乙方應賠償甲方修復設備的費用，或在設備無法修復的情況下，賠償設備新品等值現金。`});
 const DELIVERY_CLAUSE = w => ({title:`${w}設備的交貨和驗收`,body:`1、${w}設備於交貨地點，由甲方向乙方（或其代理人）交貨。因不能預見、不能避免並不能克服的客觀情況造成${w}設備延遲交貨時，甲方不承擔責任。\n2、乙方應自收貨時在交貨地點檢查驗收${w}設備，如乙方在驗收時發現${w}設備的型號、規格、數量和技術性能等有不符、不良或瑕疵等屬於甲方的責任時，乙方應在交貨驗收當下立即將上述情況提出，由甲方負責處理，否則，視為${w}設備符合本合約及附件的約定要求。`});
 const DUTY_CLAUSE = w => ({title:"雙方的義務和責任",body:`1、乙方不得將${w}設備出售、轉移、擔保、抵押或做任何足以損害甲方權益之處分，如有任何第三者侵害該設備之所有權時，無論對該設備之管理查封或任何處置時，乙方應出面證明該設備係為甲方所有之財產，並立刻通知甲方取回。\n2、乙方應以善良管理人之注意，保管${w}設備，承擔在${w}期內發生的設備毀損（正常損耗不在此內）、自然災害、被盜、遺失等原因不復存在的風險。\n3、在${w}設備發生毀損、自然災害、被盜、遺失等原因不復存在時，乙方應立即通知甲方，甲方有權選擇下列方式之一，由乙方負責處理並承擔其一切費用：\n   3-1、更換與${w}設備同等型號、性能的部件或配件使其能正常使用。\n   3-2、當${w}設備毀損至無法修理的程度時，乙方應賠償新品等值現金。`});
+const SALE_CLAUSES = [
+ {title:"標的物價格",body:"一、標的物價金：新台幣 {{price}} ({{tax}})。\n二、雙方於簽約前已充分了解並同意本合約內容，並同意合約內容，故無論履約期間或展延期間，材料、產品價格或因法令及匯率變動，雙方均同意本合約價金不得調整。"},
+ {title:"付款辦法",body:"一、標的物價金及支付方式，除雙方另行規定並納入本合約之附約外，悉依本合約付款方式辦理。\n二、採現金、刷卡、電匯付款、即期支票；乙方所開立之即期支票，一律以抬頭禁止背書轉讓、劃線之期票支付；甲方公司提供公司行號之銀行帳戶如下，銀行：{{bank}} 帳號：{{acct}} 戶名：{{holder}}，由乙方以匯款支付之。"},
+ {title:"交貨期限與條件",body:"一、如因可歸責於乙方因素或不可歸責於雙方之天災事變、不可抗拒之因素，致使甲方無法按預定期限交貨時，由雙方協議展延交貨期限。"},
+ {title:"驗收程序",body:"一、本合約所列之標的物貨品，係依原廠所生產之規格型式為準，其有關資料必要時由甲方提供予乙方參考。\n二、甲方交付之產品於乙方所約定之處所，乙方應於現場檢查數量、規格、功能及外觀包裝，若經發現異常、損毀、破損，應立即通知甲方並與運送人員確認，並確認攜回做後續處理。若經現場查驗無誤，並簽屬領收之文件後，甲方得拒絕事後因數量、規格、功能、外觀包裝等因素退換貨。"},
+ {title:"保固期限",body:"一、本合約之標的物自乙方驗收合格日起，由甲方負責保固責任，保固期限為{{warranty}}年。\n二、甲方負責於保固期間免責修復、換件，但經甲方判定屬人為之不當使用、非產品本身不良及天災之不可抗力因素，所造成之損壞不在此限。\n三、保固期內產品維修期間提供備用機服務。"},
+ {title:"保密義務",body:"一、雙方因本合約而相互知悉他方之業務機密、專業技術與營業秘密等，均應互負保密義務，任一方未得他方書面同意，不得擅自利用、洩漏與提供予第三人知悉及使用，違者應對他方負損害賠償責任，但該資訊已公開或眾所週知者，不在此限。\n二、本條所訂保密承諾，於本合約終止或屆滿後仍屬有效。"},
+ {title:"準據法及管轄",body:"一、合約期間內，雙方應依誠實信用原則履行合約，任何因本合約履行所生之糾紛應由甲、乙雙方本於善意協議處理之，如因此涉訟時，本合約書應以中華民國法律為準據法，並合意以{{court}}為第一審管轄法院。"},
+ {title:"其他約定",body:"一、本合約取代甲乙雙方先前口頭及其他書面約定，雙方合作相關事宜及協議規定依本合約及本合約之附件為主。\n二、本合約若有未盡事宜，將由甲、乙方雙方協議後以書面增補方式修改之，或以中華民國相關法令補充解釋之。\n三、未經他方書面同意前，任一方不得將本合約或本合約下之任何權利或義務轉讓予任何第三人。\n四、本合約正本壹式二份，由甲、乙雙方各執乙份為憑。"}
+];
 const INSTALL_CLAUSES = [
  {title:"分期期限",body:"自 {{start}} 至 {{end}} 止。(分期期間含基本保固維修)\n最短分期為 {{minYears}} 年，合約期滿如需繼續，應在本合約期滿前三日內，重新簽訂合約或辦理分期手續，否則甲方有權將設備另行安排。"},
  {title:"分期價格計費方式及價格",body:"1、分期價格：本設備按月計價，每月收取分期費 {{monthly}} 元\n2、如設備乙方未使用，分期時間照常計算。\n3、經甲、乙雙方協商，甲方向乙方收取保證金 {{deposit}} 元，作為履行本合約的保證。乙方繳納保證金及分期費後辦理提貨手續。分期期間不得以保證金抵作分期費。分期期滿，扣除應付分期設備的缺損賠償金後，保證金餘額應退還乙方。"},
@@ -437,13 +449,13 @@ function imgRatio(src){ if(!src) return 0; let im=IMG_CACHE[src]; if(!im){ im=ne
 function fitImg(src, bw, bh, cls){ if(!src) return ""; const r=imgRatio(src); let w=bw,h=bh; if(r){ if(r>=bw/bh){ w=bw; h=Math.round(bw/r); } else { h=bh; w=Math.round(bh*r); } return `<img ${cls?`class="${cls}"`:""} src="${src}" width="${w}" height="${h}" style="width:${w}px;height:${h}px" alt="">`; } return `<img ${cls?`class="${cls}"`:""} src="${src}" style="max-width:${bw}px;max-height:${bh}px;width:auto;height:auto" alt="">`; }
 function cnFormal(n){ const d="零壹貳參肆伍陸柒捌玖"; if(n<10) return d[n]; if(n===10) return "拾"; if(n<20) return "拾"+d[n-10]; return d[Math.floor(n/10)]+"拾"+(n%10?d[n%10]:""); }
 function renderEquip(d, kind, gd){
-  const C=S.company, lease=kind==="lease", w=lease?"租賃":"分期";
+  const C=S.company, lease=kind==="lease", sale=kind==="sale", w=lease?"租賃":sale?"買賣":"分期";
   const FS=gd?"10.5pt":"12.5px", LH=gd?"1.45":"1.68";
   const P=(c,st)=>`<p class="blk" style="margin:0 0 ${gd?2:3}px 0;font-size:${FS};line-height:${LH};${st||""}">${c}</p>`;
   const roc=iso=>{ if(!iso) return "＿＿＿年＿＿＿月＿＿＿日"; const [y,m,dd]=iso.split("-").map(Number); return `民國 ${y-1911} 年 ${m} 月 ${dd} 日`; };
   const u=x=>`<u>&nbsp;&nbsp;${x?esc(String(x)):"　　　　　"}&nbsp;&nbsp;</u>`;
   const vars={start:roc(d.start),end:roc(d.end),minYears:u(d.minYears),monthly:u(num(d.monthly)?money(d.monthly):""),deposit:u(num(d.deposit)?money(d.deposit):""),
-    earlyFee:u(num(d.earlyFee)?money(d.earlyFee):""),longChk:d.termType==="長期分期"?"☑":"☐",shortChk:d.termType==="短期分期"?"☑":"☐",
+    earlyFee:u(num(d.earlyFee)?money(d.earlyFee):""),price:u(num(d.price)?money(d.price)+" 元":""),tax:esc(d.taxMode||"未稅"),warranty:esc(d.warranty||"壹"),longChk:d.termType==="長期分期"?"☑":"☐",shortChk:d.termType==="短期分期"?"☑":"☐",
     bank:esc(`${C.bankName||"＿＿＿＿"} ${C.bankBranch||""}`.trim()),acct:esc(C.bankAcct||"＿＿＿＿"),holder:esc(C.bankHolder||C.name),court:esc(d.court||"＿＿＿＿")};
   const fillE=t=>esc(t).replace(/\{\{(\w+)\}\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
   const bd="border:1px solid #333333;";
@@ -461,31 +473,60 @@ function renderEquip(d, kind, gd){
       <td style="width:4%;border:1px solid #FFFFFF"></td>
       <td style="width:9%;background-color:${brand};border:1px solid ${brand}"></td></tr></table>${pageBreak}`;
   }
-  h+=P(`<b>${lease?"設備租賃合約書":"設備分期合約書"}</b>`,`text-align:center;font-size:${gd?"18pt":"24px"};letter-spacing:4px;margin-bottom:${gd?6:10}px`);
+  h+=P(`<b>${lease?"設備租賃合約書":sale?"設備買賣合約書":"設備分期合約書"}</b>`,`text-align:center;font-size:${gd?"18pt":"24px"};letter-spacing:4px;margin-bottom:${gd?6:10}px`);
   h+=P(`合約編號：${esc(d.no)}`,`text-align:right;font-size:${gd?"9pt":"11px"};color:#555555`);
+  if(sale){
+    const party2s=d.client?`<u>&nbsp;${esc(d.client)}&nbsp;</u>`:"＿＿＿＿＿＿＿＿＿＿";
+    const H=(c)=>P(c,`padding-left:${gd?28:32}px;text-indent:-${gd?28:32}px;text-align:justify`);
+    h+=P(`立合約書人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱甲方）`)+P(`　　　　　　${party2s}（以下簡稱乙方）`);
+    h+=P("雙方基於誠信原則，就設備買賣事宜協商一致，依據報價單內容為執行準則，訂立本買賣合約（以下簡稱本合約），其條款如下，雙方應共同遵守。","margin-top:8px;text-align:justify");
+    h+=P(`<b>第一條　標的物</b>`,"margin-top:8px");
+    h+=H("一、標的物資訊：");
+    if(d.items.length<=1){ const it=d.items[0]||{};
+      h+=P(`a). 名稱：${esc(it.name||"")}`,`padding-left:${gd?28:32}px`)+P(`b). 數量：${esc(it.qty||"")}`,`padding-left:${gd?28:32}px`)+P(`c). 內容請見附件一`,`padding-left:${gd?28:32}px`);
+    } else {
+      h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:2px 0 4px 0"><tr>${td("<b>名稱</b>","width:58%;text-align:center")}${td("<b>型號</b>","width:26%;text-align:center")}${td("<b>數量</b>","width:16%;text-align:center")}</tr>${d.items.map(it=>`<tr>${td(esc(it.name))}${td(esc(it.model),"text-align:center")}${td(esc(it.qty),"text-align:center")}</tr>`).join("")}</table>`;
+      h+=P("內容請見附件一",`padding-left:${gd?28:32}px`);
+    }
+    d.clauses.forEach((c,i)=>{
+      h+=P(`<b>第${cnNum(i+2)}條　${fillE(c.title)}</b>`,"margin-top:8px");
+      if(c.body) fillE(c.body).split("\n").forEach(line=>{ h+=H(line.trim()||"&nbsp;"); });
+    });
+    const sealsS=`${SEAL.co?`<img src="${SEAL.co}" width="88" height="88" style="width:88px;height:88px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="56" height="56" style="width:56px;height:56px">`:""}`;
+    h+=P("<b>立書合約人</b>","margin-top:14px");
+    h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed">
+      <tr>${tdn(`甲　　方：${esc(C.name)}`,"width:50%")}${tdn(`乙　　方：${esc(d.client||"")}`,"width:50%")}</tr>
+      <tr>${tdn(`代 表 人：${esc(C.owner||"")}`)}${tdn(`代 表 人：${esc(d.contact||"")}`)}</tr>
+      <tr>${tdn(`地　　址：${esc(C.address||"")}`)}${tdn(`地　　址：${esc(d.address||"")}`)}</tr>
+      <tr>${tdn(`統一編號：${esc(C.taxId||"")}`)}${tdn(`統一編號：${esc(d.taxId||"")}`)}</tr>
+      <tr>${tdn(`公司章／小章：<br>${sealsS||"&nbsp;"}`)}${tdn(`公司章／小章：<br><br><br><br><br>`)}</tr></table>`;
+    const dd=d.date?d.date.split("-").map(Number):null;
+    h+=P(dd?`中　華　民　國　${dd[0]-1911}　年　${dd[1]}　月　${dd[2]}　日`:"中　華　民　國　　　　年　　　月　　　日","text-align:center;margin-top:14px;letter-spacing:2px");
+  } else {
   const party2=d.client?`<u>&nbsp;${esc(d.client)}&nbsp;</u>`:"＿＿＿＿＿＿＿＿＿＿";
-  h+= lease ? P(`出租人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱：甲方）`)+P(`承租人：${party2}（以下簡稱：乙方）`)
-            : P(`立合約書人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱甲方）`)+P(`　　　　　　${party2}（以下簡稱乙方）`);
-  h+=P(`為明確設備${w}之雙方的權利和義務，經雙方同意，特訂立本合約，以便共同遵守：`,"margin-top:8px");
-  h+=P(`<b>壹、${w}設備名稱、型號、附屬品/配件、數量</b>`,"margin-top:8px");
-  h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:2px 0 6px 0"><tr>${td("<b>設備名稱</b>","width:46%;text-align:center")}${td("<b>型號</b>","width:16%;text-align:center")}${td("<b>附屬品/配件</b>","width:24%;text-align:center")}${td("<b>數量</b>","width:14%;text-align:center")}</tr>${d.items.map(it=>`<tr>${td(esc(it.name))}${td(esc(it.model),"text-align:center")}${td(esc(it.acc),"text-align:center")}${td(esc(it.qty),"text-align:center")}</tr>`).join("")}</table>`;
-  d.clauses.forEach((c,i)=>{
-    h+=P(`<b>${cnFormal(i+2)}、${fillE(c.title)}</b>`,"margin-top:6px");
-    if(c.body) fillE(c.body).split("\n").forEach(line=>{ const ind=(line.match(/^ +/)||[""])[0].length; h+=P(line.trim()||"&nbsp;",`padding-left:${gd?(ind?36:14):(ind?44:18)}px;text-align:justify`); });
-  });
-  const seals=`${SEAL.co?`<img src="${SEAL.co}" width="88" height="88" style="width:88px;height:88px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="56" height="56" style="width:56px;height:56px">`:""}`;
-  h+=P("<b>立約人：</b>","margin-top:14px");
-  h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed"><tr>${tdn("<b>甲方</b>","width:50%")}${tdn("","width:50%")}</tr>
-    <tr>${tdn(`公司名稱：${esc(C.name)}`)}${tdn(`負責人：${esc(C.owner||"")}`)}</tr>
-    <tr>${tdn(`地　　址：${esc(C.address||"")}`)}${tdn(`電　　話：${esc(C.phone||"")}`)}</tr>
-    <tr>${tdn(`統一編號：${esc(C.taxId||"")}`)}${tdn(`公司大小章：<br>${seals}`)}</tr></table>`;
-  h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin-top:12px"><tr>${tdn("<b>乙方</b>","width:50%")}${tdn("","width:50%")}</tr>
-    <tr>${tdn(`公司名稱：${esc(d.client||"")}`)}${tdn(`聯 絡 人：${esc(d.contact||"")}`)}</tr>
-    <tr>${tdn(`地　　址：${esc(d.address||"")}`)}${tdn(`電　　話：${esc(d.phone||"")}`)}</tr>
-    <tr>${tdn(`統一編號：${esc(d.taxId||"")}`)}${tdn(`公司大小章：<br><br><br><br>`)}</tr></table>`;
+    h+= lease ? P(`出租人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱：甲方）`)+P(`承租人：${party2}（以下簡稱：乙方）`)
+              : P(`立合約書人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱甲方）`)+P(`　　　　　　${party2}（以下簡稱乙方）`);
+    h+=P(`為明確設備${w}之雙方的權利和義務，經雙方同意，特訂立本合約，以便共同遵守：`,"margin-top:8px");
+    h+=P(`<b>壹、${w}設備名稱、型號、附屬品/配件、數量</b>`,"margin-top:8px");
+    h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:2px 0 6px 0"><tr>${td("<b>設備名稱</b>","width:46%;text-align:center")}${td("<b>型號</b>","width:16%;text-align:center")}${td("<b>附屬品/配件</b>","width:24%;text-align:center")}${td("<b>數量</b>","width:14%;text-align:center")}</tr>${d.items.map(it=>`<tr>${td(esc(it.name))}${td(esc(it.model),"text-align:center")}${td(esc(it.acc),"text-align:center")}${td(esc(it.qty),"text-align:center")}</tr>`).join("")}</table>`;
+    d.clauses.forEach((c,i)=>{
+      h+=P(`<b>${cnFormal(i+2)}、${fillE(c.title)}</b>`,"margin-top:6px");
+      if(c.body) fillE(c.body).split("\n").forEach(line=>{ const ind=(line.match(/^ +/)||[""])[0].length; h+=P(line.trim()||"&nbsp;",`padding-left:${gd?(ind?36:14):(ind?44:18)}px;text-align:justify`); });
+    });
+    const seals=`${SEAL.co?`<img src="${SEAL.co}" width="88" height="88" style="width:88px;height:88px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="56" height="56" style="width:56px;height:56px">`:""}`;
+    h+=P("<b>立約人：</b>","margin-top:14px");
+    h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed"><tr>${tdn("<b>甲方</b>","width:50%")}${tdn("","width:50%")}</tr>
+      <tr>${tdn(`公司名稱：${esc(C.name)}`)}${tdn(`負責人：${esc(C.owner||"")}`)}</tr>
+      <tr>${tdn(`地　　址：${esc(C.address||"")}`)}${tdn(`電　　話：${esc(C.phone||"")}`)}</tr>
+      <tr>${tdn(`統一編號：${esc(C.taxId||"")}`)}${tdn(`公司大小章：<br>${seals}`)}</tr></table>`;
+    h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin-top:12px"><tr>${tdn("<b>乙方</b>","width:50%")}${tdn("","width:50%")}</tr>
+      <tr>${tdn(`公司名稱：${esc(d.client||"")}`)}${tdn(`聯 絡 人：${esc(d.contact||"")}`)}</tr>
+      <tr>${tdn(`地　　址：${esc(d.address||"")}`)}${tdn(`電　　話：${esc(d.phone||"")}`)}</tr>
+      <tr>${tdn(`統一編號：${esc(d.taxId||"")}`)}${tdn(`公司大小章：<br><br><br><br>`)}</tr></table>`;
+  }
   if(d.photos && d.photos.length){
     h+=pageBreak;
-    h+=P(`附件：<b>${w}設備外觀實體照片</b>`,"margin-bottom:6px");
+    h+=P(sale?`附件一：<b>標的物內容</b>`:`附件：<b>${w}設備外觀實體照片</b>`,"margin-bottom:6px");
     const pids=new Set(d.items.map(it=>it.pid).filter(Boolean));
     const imgTag=(src,pw)=>{ const s=photoSrc(src); if(!s) return "&nbsp;"; const r=imgRatio(s), ph=r?Math.round(pw/r):""; return `<img src="${s}" width="${pw}" ${ph?`height="${ph}"`:""} style="max-width:100%;width:${pw}px;height:${ph?ph+"px":"auto"}">`; };
     const sfs=gd?"9.5pt":"11.5px";
@@ -551,7 +592,7 @@ function openProducts(){
 function applyProduct(type,i,id){
   const it=S.docs[type].items[i], p=prodById(id); if(!it) return;
   if(!p){ it.pid=""; return; }
-  if(type==="install"||type==="lease"){
+  if(type==="install"||type==="lease"||type==="sale"){
     const d=S.docs[type];
     Object.assign(it,{pid:id,name:p.name,model:p.model||({asl300:"ASL 300",api202:"API 202",pro1:"PRO-1 SRP",ncpi2:"NCPI(小P)"}[id])||String(p.name).split(" ")[0],acc:"請見附件",qty:it.qty||1});
     d.photos=d.photos||[];
@@ -629,6 +670,7 @@ function blankDoc(type){
     case "ship": return {no:nextNo(P),date:t,orderNo:"",carrier:"黑貓宅急便",trackNo:"",client:"",contact:"",phone:"",address:"",items:[{name:"",spec:"",lot:"",exp:"",qty:1,unit:"瓶",price:0}],showPrice:false,note:"",sample:false};
     case "stmt": return {no:nextNo(P),period:thisMonth(),date:t,due:addDays(t,30),client:"",taxId:"",contact:"",phone:"",address:"",prev:0,rows:[{date:t,ref:"",desc:"",amount:0,paid:0}],note:"",sample:false};
     case "kol": return {no:nextNo(P),date:t,product:"",start:t,end:addDays(t,60),name:"",handle:"",platforms:"",followers:"",idNo:"",phone:"",email:"",address:"",items:[{platform:"Instagram",format:"Reels 短影音",qty:1,date:""}],fee:0,feeType:"個人（執行業務所得 9A）",union:false,commission:"",gifts:"",payDays:30,bankName:"",bankAcct:"",bankHolder:"",reviewDays:3,authMonths:6,exclusDays:30,court:"臺灣臺北地方法院",clauses:JSON.parse(JSON.stringify(KOL_CLAUSES)),sample:false};
+    case "sale": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS.sale)),price:"",taxMode:"未稅",warranty:"壹",court:"臺灣高雄地方法院",cover:true,photos:[{label:"NCPI(小P) 奈米冷壓噴射系統第二代",img:"P:ncpi2"}],clauses:JSON.parse(JSON.stringify(SALE_CLAUSES)),sample:false};
     case "install": case "lease": return {no:nextNo(P),date:t,client:"",contact:"",phone:"",address:"",taxId:"",items:JSON.parse(JSON.stringify(EQ_ITEMS[type])),start:t,end:addDays(t,364),minYears:"1",monthly:"",deposit:"",earlyFee:"",termType:"長期分期",court:"高雄地方法院",cover:true,photos:EQ_PHOTOS(),clauses:JSON.parse(JSON.stringify(type==="lease"?LEASE_CLAUSES:INSTALL_CLAUSES)),sample:false};
     case "store": return {no:nextNo(P),client:"",contact:"",taxId:"",phone:"",email:"",address:"",plan:"",taxMode:"未稅",purchase:"",payMethod:"匯款",start:t,end:addDays(t,364),amountWan:"",discount:"",idNo:"",birthday:"",sales:"",court:"高雄地方法院",note:"",clauses:JSON.parse(JSON.stringify(STORE_CLAUSES)),sample:false};
     case "dealer": return {no:nextNo(P),date:t,level:"區域經銷商",region:"",products:"",start:t,end:addDays(t,364),client:"",taxId:"",owner:"",phone:"",email:"",address:"",disc:"建議售價 6 折",minOrder:0,target:0,deposit:0,payTerms:"月結 30 天",leadDays:3,court:"臺灣臺北地方法院",clauses:JSON.parse(JSON.stringify(DEALER_CLAUSES)),sample:false};
@@ -650,6 +692,7 @@ function sampleDoc(type){
     fee:30000,commission:"導購業績 10%",gifts:"產品 2 瓶",bankName:"範例銀行（000）",bankAcct:"0000-000-000000",bankHolder:"王小美"});
   if(type==="dealer") Object.assign(d,{region:"台中市、彰化縣",products:"奇異生技全系列洗護髮及保養產品",client:"（範例）中部美業經銷有限公司",taxId:"87654321",owner:"陳大明",phone:"04-2300-5678",email:"dealer@example.com",address:"台中市西屯區範例路 200 號",
     minOrder:50000,target:600000,deposit:30000});
+  if(type==="sale") Object.assign(d,{client:"（範例）晨光美學沙龍有限公司",contact:"林小姐",phone:"07-123-4567",address:"高雄市新興區範例路 100 號",taxId:"12345678",price:120000});
   if(type==="install"||type==="lease") Object.assign(d,{client:"（範例）晨光美學沙龍有限公司",contact:"林小姐",phone:"07-123-4567",address:"高雄市新興區範例路 100 號",taxId:"12345678",monthly:type==="lease"?8000:12000,deposit:30000,earlyFee:type==="install"?60000:""});
   if(type==="store") Object.assign(d,{client:"（範例）晨光美髮沙龍",contact:"林小姐",taxId:"12345678",phone:"07-123-4567",email:"salon@example.com",address:"高雄市新興區範例路 100 號",
     plan:"首次進貨滿 10 萬元，贈送沙龍專業護髮組 2 組及店內陳列架 1 座。\n每季提供一次技術教育課程。",purchase:"玫瑰淨磁極緻水 × 48 瓶\n肌能煥膚精華 × 24 瓶\n沙龍專業護髮組 × 12 組",amountWan:"拾",discount:"9",sales:"王業務"});
@@ -759,6 +802,14 @@ const SCHEMA = {
   {h:"附件照片",list:"photos",add:"新增照片",cols:[F("label","名稱"),F("img","照片","img")],blank:{label:"",img:""}},
   {h:"合約條款",clauses:INSTALL_CLAUSES}
  ],
+ sale:[
+  {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("cover","加上封面頁","chk")]},
+  {h:"乙方資料",f:[F("client","公司名稱","text",{full:1}),F("contact","代表人"),F("phone","電話"),F("taxId","統一編號"),F("address","地址","text",{full:1})]},
+  {h:"標的物（買賣設備）",list:"items",add:"新增設備",cols:[F("name","設備名稱","text",{full:1}),F("model","型號"),F("qty","數量","num")],blank:{name:"",model:"",acc:"請見附件",qty:1}},
+  {h:"價格與保固",f:[F("price","標的物價金（元）","num"),F("taxMode","價金","sel",{o:["未稅","含稅"]}),F("warranty","保固年數（例：壹）"),F("court","管轄法院")]},
+  {h:"附件照片",list:"photos",add:"新增照片",cols:[F("label","名稱"),F("img","照片","img")],blank:{label:"",img:""}},
+  {h:"合約條款",clauses:SALE_CLAUSES}
+ ],
  lease:[
   {h:"合約資訊",f:[F("no","合約編號"),F("date","簽約日期","date"),F("start","租賃起日","date"),F("end","租賃迄日","date"),F("minYears","最短租賃期（年）"),F("cover","加上封面頁","chk")]},
   {h:"承租人（乙方）資料",f:[F("client","公司名稱","text",{full:1}),F("contact","聯絡人"),F("phone","電話"),F("taxId","統一編號"),F("address","地址","text",{full:1})]},
@@ -800,7 +851,7 @@ function renderForm(){
       h += `<div class="sec"><div class="sec-h"><span>${sec.h}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${plBtn}<button class="btn btn-sm" type="button" data-act="add" data-list="${sec.list}">＋ ${sec.add}</button></span></div>`;
       if(sec.list==="items" && type==="quote") h += `<div class="alldisc"><label for="allDisc">全部品項折數</label><input id="allDisc" type="number" min="1" max="100" inputmode="decimal" placeholder="例：85"><span>%</span><button class="btn btn-sm" type="button" data-act="alldisc">套用到全部</button><button class="btn btn-sm btn-ghost" type="button" data-act="nodisc">全部取消折扣</button></div>`;
       d[sec.list].forEach((it,i)=>{
-        const picker = (sec.list==="items" && (type==="quote"||type==="ship"||type==="install")) ? `<div class="fld full"><label for="pick${i}">從產品庫選</label><select id="pick${i}" data-pick="${i}"><option value="">－ 自行輸入 －</option>${S.products.map(p=>`<option value="${esc(p.id)}" ${it.pid===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div>` : "";
+        const picker = (sec.list==="items" && (type==="quote"||type==="ship"||type==="install"||type==="sale")) ? `<div class="fld full"><label for="pick${i}">從產品庫選</label><select id="pick${i}" data-pick="${i}"><option value="">－ 自行輸入 －</option>${S.products.map(p=>`<option value="${esc(p.id)}" ${it.pid===p.id?"selected":""}>${esc(p.name)}</option>`).join("")}</select></div>` : "";
         h += `<div class="item"><div class="item-h"><span>#${i+1}</span><button class="x" type="button" title="刪除" aria-label="刪除第 ${i+1} 項" data-act="del" data-list="${sec.list}" data-i="${i}">×</button></div><div class="grid2">${picker}${sec.cols.map(c=>fieldHTML(c, `${sec.list}.${i}.${c.k}`, it[c.k])).join("")}</div></div>`;
       });
       h += `</div>`;
@@ -975,7 +1026,7 @@ function renderStore(d, gd){
   const table=`<table style="width:100%;border-collapse:collapse;table-layout:fixed">${cols}${spacer}${rows}</table>`;
   return `<div>${head}${table}<p style="margin:${gd?4:8}px 0 0 0;font-size:${gd?13:14}px;font-weight:700">備註: <span style="font-weight:400">${d.note?nl(d.note):""}</span></p></div>`;
 }
-const RENDER={quote:renderQuote,ship:renderShip,stmt:renderStmt,kol:renderKol,dealer:renderDealer,store:renderStore,install:d=>renderEquip(d,"install"),lease:d=>renderEquip(d,"lease")};
+const RENDER={quote:renderQuote,ship:renderShip,stmt:renderStmt,kol:renderKol,dealer:renderDealer,store:renderStore,install:d=>renderEquip(d,"install"),sale:d=>renderEquip(d,"sale"),lease:d=>renderEquip(d,"lease")};
 
 function render(){
   const type = S.cur==="__history" ? (S.lastDoc||"quote") : S.cur;
@@ -1062,7 +1113,7 @@ $("#formPanel").addEventListener("click",e=>{
   if(a==="delimg"){ setPath(d,b.dataset.p,""); }
   if(a==="addc"){ d.clauses.push({title:type==="store"?"":"新條款",body:""}); }
   if(a==="delc"){ d.clauses.splice(Number(b.dataset.i),1); }
-  if(a==="resetc"){ d.clauses=JSON.parse(JSON.stringify({kol:KOL_CLAUSES,store:STORE_CLAUSES,install:INSTALL_CLAUSES,lease:LEASE_CLAUSES,dealer:DEALER_CLAUSES}[type])); }
+  if(a==="resetc"){ d.clauses=JSON.parse(JSON.stringify({kol:KOL_CLAUSES,store:STORE_CLAUSES,install:INSTALL_CLAUSES,sale:SALE_CLAUSES,lease:LEASE_CLAUSES,dealer:DEALER_CLAUSES}[type])); }
   if(a==="newno"){ d.no=nextNo(DOCS[type].prefix,d.no); if(d.date!==undefined) d.date=today(); setStatus("info",`已換成新單號 ${d.no}，其他內容保留，可以直接修改。`); }
   if(a==="sample"){ S.docs[type]=sampleDoc(type); }
   if(a==="clear"){ S.docs[type]=blankDoc(type); }
@@ -1107,7 +1158,7 @@ const GDOC_CSS = `body{font-family:"Noto Sans TC",sans-serif;font-size:11pt;colo
 
 /* ---------- Google Docs version: tables + inline styles only (Docs ignores flex/grid/classes) ---------- */
 function gdocHTML(type){
-  if(type==="install"||type==="lease"){ const lg=document.querySelector("#paper img"); return `<html><head><meta charset="utf-8"></head><body style="font-family:'Noto Sans TC',Arial,sans-serif;color:#111111;padding:36pt 48pt 36pt 48pt;max-width:516pt">${renderEquip(S.docs[type],type,true)}</body></html>`; }
+  if(type==="install"||type==="lease"||type==="sale"){ const lg=document.querySelector("#paper img"); return `<html><head><meta charset="utf-8"></head><body style="font-family:'Noto Sans TC',Arial,sans-serif;color:#111111;padding:36pt 48pt 36pt 48pt;max-width:516pt">${renderEquip(S.docs[type],type,true)}</body></html>`; }
   if(type==="store"){ const lg=document.querySelector("#paper .st-logo"); if(lg && lg.naturalWidth) S.company.logoRatio=lg.naturalWidth/lg.naturalHeight; return `<html><head><meta charset="utf-8"></head><body style="font-family:'Noto Sans TC',Arial,sans-serif;color:#111111;padding:30pt 40pt 30pt 40pt;max-width:532pt">${renderStore(S.docs.store,true)}</body></html>`; }
   const C=S.company, d=S.docs[type], B=C.color||"#1F5C63";
   const FONT="font-family:'Noto Sans TC',Arial,sans-serif;";
