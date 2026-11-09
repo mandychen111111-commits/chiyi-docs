@@ -477,16 +477,16 @@ function renderEquip(d, kind, gd){
   h+=P(`合約編號：${esc(d.no)}`,`text-align:right;font-size:${gd?"9pt":"11px"};color:#555555`);
   if(sale){
     const party2s=d.client?`<u>&nbsp;${esc(d.client)}&nbsp;</u>`:"＿＿＿＿＿＿＿＿＿＿";
-    const H=(c)=>P(c,`padding-left:${gd?28:32}px;text-indent:-${gd?28:32}px;text-align:justify`);
+    const IND=gd?"21pt":"25px"; const H=(c)=>P(c,`padding-left:${IND};text-indent:-${IND};text-align:justify`);
     h+=P(`立合約書人：<u>&nbsp;${esc(C.name)}&nbsp;</u>（以下簡稱甲方）`)+P(`　　　　　　${party2s}（以下簡稱乙方）`);
     h+=P("雙方基於誠信原則，就設備買賣事宜協商一致，依據報價單內容為執行準則，訂立本買賣合約（以下簡稱本合約），其條款如下，雙方應共同遵守。","margin-top:8px;text-align:justify");
     h+=P(`<b>第一條　標的物</b>`,"margin-top:8px");
     h+=H("一、標的物資訊：");
     if(d.items.length<=1){ const it=d.items[0]||{};
-      h+=P(`a). 名稱：${esc(it.name||"")}`,`padding-left:${gd?28:32}px`)+P(`b). 數量：${esc(it.qty||"")}`,`padding-left:${gd?28:32}px`)+P(`c). 內容請見附件一`,`padding-left:${gd?28:32}px`);
+      h+=P(`a). 名稱：${esc(it.name||"")}`,`padding-left:${IND}`)+P(`b). 數量：${esc(it.qty||"")}`,`padding-left:${IND}`)+P(`c). 內容請見附件一`,`padding-left:${IND}`);
     } else {
       h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:2px 0 4px 0"><tr>${td("<b>名稱</b>","width:58%;text-align:center")}${td("<b>型號</b>","width:26%;text-align:center")}${td("<b>數量</b>","width:16%;text-align:center")}</tr>${d.items.map(it=>`<tr>${td(esc(it.name))}${td(esc(it.model),"text-align:center")}${td(esc(it.qty),"text-align:center")}</tr>`).join("")}</table>`;
-      h+=P("內容請見附件一",`padding-left:${gd?28:32}px`);
+      h+=P("內容請見附件一",`padding-left:${IND}`);
     }
     d.clauses.forEach((c,i)=>{
       h+=P(`<b>第${cnNum(i+2)}條　${fillE(c.title)}</b>`,"margin-top:8px");
