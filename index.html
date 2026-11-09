@@ -542,7 +542,7 @@ function renderEquip(d, kind, gd){
     }).join("")}</table>`;
   }
   if(d.back!==false && !gd){
-    const info=[C.address?`地址：${esc(C.address)}`:"",C.phone?`電話：${esc(C.phone)}`:"",C.email?`Email：${esc(C.email)}`:""].filter(Boolean).join("<br>");
+    const info="";
     h+=`${pageBreak}<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed"><tr>
       <td style="width:9%;background-color:${brand};border:1px solid ${brand};height:940px"></td>
       <td style="width:4%;border:1px solid #FFFFFF"></td>
@@ -720,8 +720,9 @@ function normalize(){
   if(!S.bwtAdded){ if(!S.companies.some(c=>/蓓薇媞/.test(c.name))) S.companies.push(Object.assign(defaultCompany(),{id:"bwt",name:"蓓薇媞生技有限公司",en:"THE BEST WITH BEAUTY LIFE",phone:"",email:"",color:"#2E2A2B",folders:{}})); S.bwtAdded=true; }
   const PRESET=[
     {re:/奇異生技/, v:{owner:"林再發",address:"高雄市前金區七賢二路 122 號 11 樓之 2",taxId:"27304667",brand:"奇異生技",logo:LOGO_CHIYI,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19889",bankHolder:"奇異生技股份有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}},
-    {re:/蓓薇媞/, v:{owner:"黃淑美",address:"高雄市前金區七賢二路 122 號 11 樓之 3",taxId:"90461860",phone:"07-2872198",color:"#5E9B3C",brand:"蓓薇媞",logo:LOGO_BWT,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19873",bankHolder:"蓓薇媞生技有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}}
+    {re:/蓓薇媞/, v:{owner:"黃淑美",address:"高雄市前金區七賢二路122號4F-1",taxId:"90461860",phone:"07-2872198",color:"#5E9B3C",brand:"蓓薇媞",logo:LOGO_BWT,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19873",bankHolder:"蓓薇媞生技有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}}
   ];
+  S.companies.forEach(c=>{ if(/蓓薇媞/.test(c.name||"") && (!c.address || /11 ?樓之 ?3/.test(c.address))) c.address="高雄市前金區七賢二路122號4F-1"; });
   ["install","sale","lease"].forEach(k=>{ if(S.docs && S.docs[k] && S.docs[k].back===undefined) S.docs[k].back=true; });
   if(S.docs && S.docs.sale && S.docs.sale.clauses){ const cl=S.docs.sale.clauses;
     if(cl[1] && /^一、標的物價金及支付方式/.test(cl[1].body||"")) cl[1].body=SALE_CLAUSES[1].body;
