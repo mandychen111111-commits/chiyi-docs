@@ -457,7 +457,7 @@ function renderEquip(d, kind, gd){
   const vars={start:roc(d.start),end:roc(d.end),minYears:u(d.minYears),monthly:u(num(d.monthly)?money(d.monthly):""),deposit:u(num(d.deposit)?money(d.deposit):""),
     earlyFee:u(num(d.earlyFee)?money(d.earlyFee):""),price:u(num(d.price)?money(d.price)+" 元":""),tax:esc(d.taxMode||"未稅"),warranty:esc(d.warranty||"壹"),longChk:d.termType==="長期分期"?"☑":"☐",shortChk:d.termType==="短期分期"?"☑":"☐",
     bank:esc(`${C.bankName||"＿＿＿＿"} ${C.bankBranch||""}`.trim()),acct:esc(C.bankAcct||"＿＿＿＿"),holder:esc(C.bankHolder||C.name),court:esc(d.court||"＿＿＿＿")};
-  const fillE=t=>esc(t).replace(/\{\{(\w+)\}\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
+  const fillE=t=>keepSp(esc(t)).replace(/\{\{(\w+)\}\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
   const bd="border:1px solid #333333;";
   const td=(c,st,attr)=>`<td ${attr||""} style="${bd}padding:${gd?"3px 6px":"5px 8px"};font-size:${FS};line-height:1.5;vertical-align:middle;${st||""}">${c}</td>`;
   const tdn=(c,st)=>`<td style="border:1px solid #FFFFFF;padding:2px 4px;font-size:${FS};line-height:1.7;vertical-align:top;${st||""}">${c}</td>`;
@@ -976,7 +976,8 @@ function renderStmt(d){
   <div class="signs"><div class="sign"><div class="cap">製表單位</div>${esc(S.company.name)}${sealsHTML()}</div>
    <div class="sign"><div class="cap">客戶核對回簽</div><span class="fine">以上帳款經核對無誤。</span><div class="ln">簽章　　　　　　　　　　　日期　　　年　　月　　日</div></div></div></div>`;
 }
-function fill(tpl, vars){ return esc(tpl).replace(/\{\{(\w+)\}\}/g,(m,k)=> (vars[k]!==undefined && vars[k]!=="") ? `<b>${vars[k]}</b>` : `<span class="ph">＿＿＿＿</span>`); }
+const keepSp=t=>String(t).replace(/ {2,}/g,m=>"&nbsp;".repeat(m.length));
+function fill(tpl, vars){ return keepSp(esc(tpl)).replace(/\{\{(\w+)\}\}/g,(m,k)=> (vars[k]!==undefined && vars[k]!=="") ? `<b>${vars[k]}</b>` : `<span class="ph">＿＿＿＿</span>`); }
 function clauseLabel(i,n){ const L=Math.max(...Array.from({length:n},(_,k)=>("第"+cnNum(k+1)+"條").length)); const t="第"+cnNum(i+1)+"條"; return {t:t+"　".repeat(L+1-t.length), w:L+1}; }
 function clausesHTML(list, vars){ return list.map((c,i)=>{ const lb=clauseLabel(i,list.length); return `<div class="clause"><div class="h"><em style="margin-right:0;white-space:pre">${lb.t}</em>${esc(c.title)}</div><p style="padding-left:${lb.w}em">${fill(c.body,vars)}</p></div>`; }).join(""); }
 function partyA(){ const C=S.company; return `<div class="sig"><div class="cap">甲方</div><div>公司名稱：${esc(C.name)}</div><div>統一編號：${ph(C.taxId)}</div><div>代表人：${ph(C.owner)}</div><div>地址：${ph(C.address)}</div><div>電話：${ph(C.phone)}</div>${sealsHTML()}</div>`; }
@@ -1016,7 +1017,7 @@ function renderStore(d, gd){
   const v=x=>x?esc(x):"&nbsp;";
   const u=x=>x?`<u>&nbsp;${esc(x)}&nbsp;</u>`:"＿＿＿＿＿";
   const vars={brand:esc(C.brand||C.name),amountWan:u(d.amountWan),discount:u(d.discount),court:esc(d.court||"＿＿＿＿")};
-  const fillS=t=>esc(t).replace(/\{\{(\w+)\}\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
+  const fillS=t=>keepSp(esc(t)).replace(/\{\{(\w+)\}\}/g,(m,k)=>vars[k]!==undefined?vars[k]:m);
   const noTax=d.taxMode==="未稅";
   const sz=gd?0.85:1;
   const seals=`${SEAL.co?`<img src="${SEAL.co}" width="${Math.round(96*sz)}" height="${Math.round(96*sz)}" style="width:${Math.round(96*sz)}px;height:${Math.round(96*sz)}px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="${Math.round(60*sz)}" height="${Math.round(60*sz)}" style="width:${Math.round(60*sz)}px;height:${Math.round(60*sz)}px">`:""}`;
@@ -1253,7 +1254,7 @@ function gdocHTML(type){
     const key = type==="kol"
       ? [["合作產品",d.product],["合作期間",`${fmtDate(d.start)} – ${fmtDate(d.end)}`],["經營平台",`${d.platforms||""}${d.followers?`（${d.followers}）`:""}`],["合作酬勞",`NT$ ${money(k.fee)}${d.commission?"＋"+d.commission:""}`],["實際匯款",`NT$ ${money(k.net)}`],["公關品",d.gifts]]
       : [["經銷等級",d.level],["經銷區域",d.region],["經銷產品",d.products],["合約期間",`${fmtDate(d.start)} – ${fmtDate(d.end)}`],["進貨價格",d.disc],["年度目標",`NT$ ${money(d.target)}`],["保證金",`NT$ ${money(d.deposit)}`],null];
-    const fillD=tpl=>esc(tpl).replace(/\{\{(\w+)\}\}/g,(m,x)=>(vars[x]!==undefined&&vars[x]!=="")?`<b>${vars[x]}</b>`:`<span style="color:#999999">＿＿＿＿</span>`);
+    const fillD=tpl=>keepSp(esc(tpl)).replace(/\{\{(\w+)\}\}/g,(m,x)=>(vars[x]!==undefined&&vars[x]!=="")?`<b>${vars[x]}</b>`:`<span style="color:#999999">＿＿＿＿</span>`);
     const clauses=d.clauses.map((c,i)=>{ const lb=clauseLabel(i,d.clauses.length); return P(`<b><span style="color:${B}">${lb.t}</span>${esc(c.title)}</b>`,"margin-top:8pt")+P(fillD(c.body).replace(/\n/g,"<br>"),`text-align:justify;padding-left:${(lb.w*9.5).toFixed(1)}pt`); }).join("");
     const deliv = type==="kol" ? P(`<b><span style="color:${B}">附表一</span>　交付內容</b>`,"margin-top:8pt")+T(`<tr>${th("#","text-align:center")}${th("平台")}${th("形式")}${th("則數","text-align:right")}${th("預定上線日")}</tr>`+d.items.map((it,i)=>`<tr>${td(i+1,cellB+"text-align:center")}${td(esc(it.platform),cellB)}${td(esc(it.format),cellB)}${td(money(it.qty),cellB+"text-align:right")}${td(fmtDate(it.date),cellB)}</tr>`).join("")) : "";
     const A=`<b style="color:${B}">甲方</b><br>公司名稱：${esc(C.name)}<br>統一編號：${v(C.taxId)}<br>代表人：${v(C.owner)}<br>地址：${v(C.address)}<br>電話：${v(C.phone)}<br>${sealImgs()}`;
