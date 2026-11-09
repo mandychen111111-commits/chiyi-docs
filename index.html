@@ -486,7 +486,17 @@ function renderEquip(d, kind, gd){
   if(d.photos && d.photos.length){
     h+=pageBreak;
     h+=P(`附件：<b>${w}設備外觀實體照片</b>`,"margin-bottom:6px");
-    h+=`<table style="width:100%;border-collapse:collapse;table-layout:fixed">${d.photos.map(p=>`<tr class="blk">${td(esc(p.label),"width:22%;vertical-align:top")}${td(photoSrc(p.img)?(()=>{ const pw=gd?230:300, r=imgRatio(photoSrc(p.img)), ph=r?Math.round(pw/r):""; return `<img src="${photoSrc(p.img)}" width="${pw}" ${ph?`height="${ph}"`:""} style="max-width:100%;width:${pw}px;height:${ph?ph+"px":"auto"}">`; })():"&nbsp;","width:78%")}</tr>`).join("")}</table>`;
+    const pids=new Set(d.items.map(it=>it.pid).filter(Boolean));
+    const imgTag=(src,pw)=>{ const s=photoSrc(src); if(!s) return "&nbsp;"; const r=imgRatio(s), ph=r?Math.round(pw/r):""; return `<img src="${s}" width="${pw}" ${ph?`height="${ph}"`:""} style="max-width:100%;width:${pw}px;height:${ph?ph+"px":"auto"}">`; };
+    const sfs=gd?"9.5pt":"11.5px";
+    h+=`<table style="width:100%;border-collapse:collapse;table-layout:fixed">${d.photos.map(ph=>{
+      const pr=ph.img && (S.products||[]).find(x=>pids.has(x.id) && x.img===ph.img);
+      if(!pr) return `<tr class="blk">${td(esc(ph.label),"width:22%;vertical-align:top")}${td(imgTag(ph.img,gd?230:300),"width:78%","colspan=\"2\"")}</tr>`;
+      const acc=lines(pr.acc).map(a=>`・${esc(a)}`).join("<br>");
+      const sp=lines(pr.specs).map(l=>`・${esc(l)}`).join("<br>");
+      const txt=`${acc?`<b>配件</b><br>${acc}`:""}${sp?`${acc?"<br><br>":""}<b>規格</b><br>${sp}`:""}`||"&nbsp;";
+      return `<tr class="blk">${td(`${esc(ph.label)}${pr.spec?`<br><span style="color:#555555;font-size:${sfs}">(${esc(pr.spec)})</span>`:""}`,"width:22%;vertical-align:top")}${td(imgTag(ph.img,gd?170:220),"width:40%;text-align:center")}${td(`<span style="font-size:${sfs};line-height:1.6">${txt}</span>`,"width:38%;vertical-align:top")}</tr>`;
+    }).join("")}</table>`;
   }
   return `<div>${h}</div>`;
 }
