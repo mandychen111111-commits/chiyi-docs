@@ -511,7 +511,7 @@ function renderEquip(d, kind, gd){
     h+=`<table class="blk" style="width:100%;border-collapse:collapse;table-layout:fixed;margin:2px 0 6px 0"><tr>${td("<b>設備名稱</b>","width:46%;text-align:center")}${td("<b>型號</b>","width:16%;text-align:center")}${td("<b>附屬品/配件</b>","width:24%;text-align:center")}${td("<b>數量</b>","width:14%;text-align:center")}</tr>${d.items.map(it=>`<tr>${td(esc(it.name))}${td(esc(it.model),"text-align:center")}${td(esc(it.acc),"text-align:center")}${td(esc(it.qty),"text-align:center")}</tr>`).join("")}</table>`;
     d.clauses.forEach((c,i)=>{
       h+=P(`<b>${cnFormal(i+2)}、${fillE(c.title)}</b>`,"margin-top:6px");
-      if(c.body) fillE(c.body).split("\n").forEach(line=>{ const ind=(line.match(/^ +/)||[""])[0].length; h+=P(line.trim()||"&nbsp;",`padding-left:${gd?(ind?36:14):(ind?44:18)}px;text-align:justify`); });
+      if(c.body) fillE(c.body).split("\n").forEach(line=>{ const ind=(line.match(/^ +/)||[""])[0].length; h+=P(line.trim()||"&nbsp;",`padding-left:${gd?(ind?"42pt":"21pt"):(ind?"50px":"25px")};text-align:justify`); });
     });
     const seals=`${SEAL.co?`<img src="${SEAL.co}" width="88" height="88" style="width:88px;height:88px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="56" height="56" style="width:56px;height:56px">`:""}`;
     h+=P("<b>立約人：</b>","margin-top:14px");
