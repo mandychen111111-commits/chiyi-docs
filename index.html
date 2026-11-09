@@ -413,10 +413,10 @@ const DELIVERY_CLAUSE = w => ({title:`${w}設備的交貨和驗收`,body:`1、${
 const DUTY_CLAUSE = w => ({title:"雙方的義務和責任",body:`1、乙方不得將${w}設備出售、轉移、擔保、抵押或做任何足以損害甲方權益之處分，如有任何第三者侵害該設備之所有權時，無論對該設備之管理查封或任何處置時，乙方應出面證明該設備係為甲方所有之財產，並立刻通知甲方取回。\n2、乙方應以善良管理人之注意，保管${w}設備，承擔在${w}期內發生的設備毀損（正常損耗不在此內）、自然災害、被盜、遺失等原因不復存在的風險。\n3、在${w}設備發生毀損、自然災害、被盜、遺失等原因不復存在時，乙方應立即通知甲方，甲方有權選擇下列方式之一，由乙方負責處理並承擔其一切費用：\n   3-1、更換與${w}設備同等型號、性能的部件或配件使其能正常使用。\n   3-2、當${w}設備毀損至無法修理的程度時，乙方應賠償新品等值現金。`});
 const SALE_CLAUSES = [
  {title:"標的物價格",body:"一、標的物價金：新台幣 {{price}} ({{tax}})。\n二、雙方於簽約前已充分了解並同意本合約內容，並同意合約內容，故無論履約期間或展延期間，材料、產品價格或因法令及匯率變動，雙方均同意本合約價金不得調整。"},
- {title:"付款辦法",body:"一、標的物價金及支付方式，除雙方另行規定並納入本合約之附約外，悉依本合約付款方式辦理。\n二、採現金、刷卡、電匯付款、即期支票；乙方所開立之即期支票，一律以抬頭禁止背書轉讓、劃線之期票支付；甲方公司提供公司行號之銀行帳戶如下，銀行：{{bank}} 帳號：{{acct}} 戶名：{{holder}}，由乙方以匯款支付之。"},
+ {title:"付款辦法",body:"一、標的物總價款及支付方式，除雙方另行規定並納入本合約之附約外，悉依本合約付款方式辦理。\n二、本合約付款方式採現金或電匯支付，雙方約定權利義務如下：\n1. 預付款：乙方應於本合約簽署時，支付合約總價 50% 予甲方。\n2. 交貨期限：甲方應於收到前述預付款後起 20 日內，將標的物全數運送至乙方指定地點。\n3. 尾款：合約總價之餘款 50%，乙方應於標的物送達並經簽收後 7 日內全數支付完畢。甲方公司提供公司行號之銀行帳戶如下，銀行：{{bank}} 帳號：{{acct}} 戶名：{{holder}}，由乙方以匯款支付之。"},
  {title:"交貨期限與條件",body:"一、如因可歸責於乙方因素或不可歸責於雙方之天災事變、不可抗拒之因素，致使甲方無法按預定期限交貨時，由雙方協議展延交貨期限。"},
  {title:"驗收程序",body:"一、本合約所列之標的物貨品，係依原廠所生產之規格型式為準，其有關資料必要時由甲方提供予乙方參考。\n二、甲方交付之產品於乙方所約定之處所，乙方應於現場檢查數量、規格、功能及外觀包裝，若經發現異常、損毀、破損，應立即通知甲方並與運送人員確認，並確認攜回做後續處理。若經現場查驗無誤，並簽屬領收之文件後，甲方得拒絕事後因數量、規格、功能、外觀包裝等因素退換貨。"},
- {title:"保固期限",body:"一、本合約之標的物自乙方驗收合格日起，由甲方負責保固責任，保固期限為{{warranty}}年。\n二、甲方負責於保固期間免責修復、換件，但經甲方判定屬人為之不當使用、非產品本身不良及天災之不可抗力因素，所造成之損壞不在此限。\n三、保固期內產品維修期間提供備用機服務。"},
+ {title:"保固期限",body:"一、本合約之標的物自乙方驗收合格日起，由甲方負責保固責任，保固期限為{{warranty}}年。\n二、甲方負責於保固期間免責修復、換件，但經甲方判定屬人為之不當使用、非產品本身不良及天災之不可抗力因素，所造成之損壞不在此限。\n三、保固期內產品維修期間提供備用機服務(AISG除外)。"},
  {title:"保密義務",body:"一、雙方因本合約而相互知悉他方之業務機密、專業技術與營業秘密等，均應互負保密義務，任一方未得他方書面同意，不得擅自利用、洩漏與提供予第三人知悉及使用，違者應對他方負損害賠償責任，但該資訊已公開或眾所週知者，不在此限。\n二、本條所訂保密承諾，於本合約終止或屆滿後仍屬有效。"},
  {title:"準據法及管轄",body:"一、合約期間內，雙方應依誠實信用原則履行合約，任何因本合約履行所生之糾紛應由甲、乙雙方本於善意協議處理之，如因此涉訟時，本合約書應以中華民國法律為準據法，並合意以{{court}}為第一審管轄法院。"},
  {title:"其他約定",body:"一、本合約取代甲乙雙方先前口頭及其他書面約定，雙方合作相關事宜及協議規定依本合約及本合約之附件為主。\n二、本合約若有未盡事宜，將由甲、乙方雙方協議後以書面增補方式修改之，或以中華民國相關法令補充解釋之。\n三、未經他方書面同意前，任一方不得將本合約或本合約下之任何權利或義務轉讓予任何第三人。\n四、本合約正本壹式二份，由甲、乙雙方各執乙份為憑。"}
@@ -490,7 +490,9 @@ function renderEquip(d, kind, gd){
     }
     d.clauses.forEach((c,i)=>{
       h+=P(`<b>第${cnNum(i+2)}條　${fillE(c.title)}</b>`,"margin-top:8px");
-      if(c.body) fillE(c.body).split("\n").forEach(line=>{ h+=H(line.trim()||"&nbsp;"); });
+      if(c.body) fillE(c.body).split("\n").forEach(line=>{ const t=line.trim(), m=t.match(/^(\d+)[.．]\s*/);
+        if(m){ const n=String(m[1]).replace(/\d/g,x=>String.fromCharCode(0xFF10+ +x)); const lab=(n+"．"), w=lab.length; h+=P(lab+t.slice(m[0].length),`padding-left:${gd?(21+w*10.5)+"pt":(25+w*12.5)+"px"};text-indent:-${gd?(w*10.5)+"pt":(w*12.5)+"px"};text-align:justify`); }
+        else h+=H(t||"&nbsp;"); });
     });
     const sealsS=`${SEAL.co?`<img src="${SEAL.co}" width="88" height="88" style="width:88px;height:88px">`:""}&nbsp;${SEAL.p?`<img src="${SEAL.p}" width="56" height="56" style="width:56px;height:56px">`:""}`;
     h+=P("<b>立書合約人</b>","margin-top:14px");
@@ -711,6 +713,9 @@ function normalize(){
     {re:/奇異生技/, v:{owner:"林再發",address:"高雄市前金區七賢二路 122 號 11 樓之 2",taxId:"27304667",brand:"奇異生技",logo:LOGO_CHIYI,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19889",bankHolder:"奇異生技股份有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}},
     {re:/蓓薇媞/, v:{owner:"黃淑美",address:"高雄市前金區七賢二路 122 號 11 樓之 3",taxId:"90461860",phone:"07-2872198",color:"#5E9B3C",brand:"蓓薇媞",logo:LOGO_BWT,bankName:"806 元大銀行",bankBranch:"前金分行",bankAcct:"21552-0000-19873",bankHolder:"蓓薇媞生技有限公司",bank2Name:"806 元大銀行",bank2Branch:"前金分行",bank2Acct:"21552-0000-19908",bank2Holder:"林再發"}}
   ];
+  if(S.docs && S.docs.sale && S.docs.sale.clauses){ const cl=S.docs.sale.clauses;
+    if(cl[1] && /^一、標的物價金及支付方式/.test(cl[1].body||"")) cl[1].body=SALE_CLAUSES[1].body;
+    if(cl[4] && /提供備用機服務。$/.test(cl[4].body||"")) cl[4].body=SALE_CLAUSES[4].body; }
   S.companies.forEach(c=>{ if((c.presetV||0)<3 && /奇異生技/.test(c.name) && c.phone==="0800-313-000") c.phone="07-2872098"; if((c.presetV||0)===2) c.presetV=3; });
   S.companies.forEach(c=>{ if((c.presetV||0)>=2) return; const p=PRESET.find(x=>x.re.test(c.name)); if(p){ for(const [k,v] of Object.entries(p.v)){ if(!c[k] || (k==="bankHolder" && !c.presetV) || (k==="color" && c.color==="#2E2A2B")) c[k]=v; } } c.presetV=3; });
   if(!Array.isArray(S.products)) S.products=DEFAULT_PRODUCTS();
