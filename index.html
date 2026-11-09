@@ -961,7 +961,8 @@ function renderStmt(d){
    <div class="sign"><div class="cap">客戶核對回簽</div><span class="fine">以上帳款經核對無誤。</span><div class="ln">簽章　　　　　　　　　　　日期　　　年　　月　　日</div></div></div></div>`;
 }
 function fill(tpl, vars){ return esc(tpl).replace(/\{\{(\w+)\}\}/g,(m,k)=> (vars[k]!==undefined && vars[k]!=="") ? `<b>${vars[k]}</b>` : `<span class="ph">＿＿＿＿</span>`); }
-function clausesHTML(list, vars){ return list.map((c,i)=>`<div class="clause"><div class="h"><em>第${cnNum(i+1)}條</em>${esc(c.title)}</div><p>${fill(c.body,vars)}</p></div>`).join(""); }
+function clauseLabel(i,n){ const L=Math.max(...Array.from({length:n},(_,k)=>("第"+cnNum(k+1)+"條").length)); const t="第"+cnNum(i+1)+"條"; return {t:t+"　".repeat(L+1-t.length), w:L+1}; }
+function clausesHTML(list, vars){ return list.map((c,i)=>{ const lb=clauseLabel(i,list.length); return `<div class="clause"><div class="h"><em style="margin-right:0;white-space:pre">${lb.t}</em>${esc(c.title)}</div><p style="padding-left:${lb.w}em">${fill(c.body,vars)}</p></div>`; }).join(""); }
 function partyA(){ const C=S.company; return `<div class="sig"><div class="cap">甲方</div><div>公司名稱：${esc(C.name)}</div><div>統一編號：${ph(C.taxId)}</div><div>代表人：${ph(C.owner)}</div><div>地址：${ph(C.address)}</div><div>電話：${ph(C.phone)}</div>${sealsHTML()}</div>`; }
 function renderKol(d){
   const k=kolCalc(d);
@@ -1008,7 +1009,7 @@ function renderStore(d, gd){
   /* one table, 8 grid columns: 8|20|14|10|6|14|4|24 (%) */
   const W=[8,20,14,10,6,14,4,24];
   const cols=`<colgroup>${W.map(w=>`<col width="${w}%" style="width:${w}%">`).join("")}</colgroup>`;
-  const list=d.clauses.map((c,i)=>`(${i+1})${fillS(c.body)}`).join("<br>");
+  const lw2=gd?24:30; const list=`<table style="width:100%;border-collapse:collapse;margin:0">${d.clauses.map((c,i)=>`<tr><td width="${lw2}" style="width:${lw2}px;border:1px solid #FFFFFF;padding:0;vertical-align:top;font-size:${gd?"11.5px":"13px"};line-height:${lh}">(${i+1})</td><td style="border:1px solid #FFFFFF;padding:0;vertical-align:top;font-size:${gd?"11.5px":"13px"};line-height:${lh}">${fillS(c.body)}</td></tr>`).join("")}</table>`;
   const acct=(on,label,n,br,a,h)=>`${chk(on)}${label}，請匯此帳號<br>銀行: ${v(n)} ${esc(br||"")}<br>帳號: ${v(a)}<br>戶名: ${v(h)}<br>匯款後請通知帳號後5碼`;
   const rows=
    `<tr>${cell("客戶<br>資訊","",'rowspan="4"')}${cell("公司名稱")}${cell(v(d.client),"",'colspan="2"')}${cell("聯絡人姓名","",'colspan="2"')}${cell(v(d.contact),"",'colspan="2"')}</tr>`+
@@ -1235,7 +1236,7 @@ function gdocHTML(type){
       ? [["合作產品",d.product],["合作期間",`${fmtDate(d.start)} – ${fmtDate(d.end)}`],["經營平台",`${d.platforms||""}${d.followers?`（${d.followers}）`:""}`],["合作酬勞",`NT$ ${money(k.fee)}${d.commission?"＋"+d.commission:""}`],["實際匯款",`NT$ ${money(k.net)}`],["公關品",d.gifts]]
       : [["經銷等級",d.level],["經銷區域",d.region],["經銷產品",d.products],["合約期間",`${fmtDate(d.start)} – ${fmtDate(d.end)}`],["進貨價格",d.disc],["年度目標",`NT$ ${money(d.target)}`],["保證金",`NT$ ${money(d.deposit)}`],null];
     const fillD=tpl=>esc(tpl).replace(/\{\{(\w+)\}\}/g,(m,x)=>(vars[x]!==undefined&&vars[x]!=="")?`<b>${vars[x]}</b>`:`<span style="color:#999999">＿＿＿＿</span>`);
-    const clauses=d.clauses.map((c,i)=>P(`<b><span style="color:${B}">第${cnNum(i+1)}條</span>　${esc(c.title)}</b>`,"margin-top:8pt")+P(fillD(c.body).replace(/\n/g,"<br>"),"text-align:justify")).join("");
+    const clauses=d.clauses.map((c,i)=>{ const lb=clauseLabel(i,d.clauses.length); return P(`<b><span style="color:${B}">${lb.t}</span>${esc(c.title)}</b>`,"margin-top:8pt")+P(fillD(c.body).replace(/\n/g,"<br>"),`text-align:justify;padding-left:${(lb.w*9.5).toFixed(1)}pt`); }).join("");
     const deliv = type==="kol" ? P(`<b><span style="color:${B}">附表一</span>　交付內容</b>`,"margin-top:8pt")+T(`<tr>${th("#","text-align:center")}${th("平台")}${th("形式")}${th("則數","text-align:right")}${th("預定上線日")}</tr>`+d.items.map((it,i)=>`<tr>${td(i+1,cellB+"text-align:center")}${td(esc(it.platform),cellB)}${td(esc(it.format),cellB)}${td(money(it.qty),cellB+"text-align:right")}${td(fmtDate(it.date),cellB)}</tr>`).join("")) : "";
     const A=`<b style="color:${B}">甲方</b><br>公司名稱：${esc(C.name)}<br>統一編號：${v(C.taxId)}<br>代表人：${v(C.owner)}<br>地址：${v(C.address)}<br>電話：${v(C.phone)}<br>${sealImgs()}`;
     const Bp = type==="kol"
